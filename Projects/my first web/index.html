@@ -1,0 +1,233 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hant" xml:lang="zh-Hant">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset={site_encoding}" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <title>{site_title}</title>
+  <link rel="stylesheet" href="{site_css}" type="text/css" />
+  <link type="text/css" href="{gmo_header_css}" rel="stylesheet" media="screen,print">
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="{site_rss}" />
+  <link rel="alternate" type="application/atom+xml" href="{site_atom}" />
+  <link rel="alternate" media="handheld" type="application/xhtml+xml" href="{mobile_url}" />
+  <script type="text/javascript" src="./template/js/cookie.js"></script>
+
+</head>
+
+<body onload="javascript:initval();">
+  <a name="top"></a>
+
+
+  <div id="layout">
+    <!-- BEGIN title -->
+    <div id="header">
+      <div style="padding:100px 0px 0 0; float:right;"></div>
+
+      <h1 class="site_title">{blog_name}</h1>
+      <div class="description">{blog_description}</div>
+    </div>
+    <br class="clear" />
+    <!-- END title -->
+    <div id="contents">
+      <div id="left">
+        <!-- BEGIN calendar -->
+        <div class="linktitle">CALENDAR</div>
+        <div class="calendar">
+          <table border="0" cellpadding="0" cellspacing="1">
+            <tr align="center">
+              <td class="cell" style="color:#CC0000">S</td>
+              <td class="cell" style="color:#ffffff;">M</td>
+              <td class="cell" style="color:#ffffff;">T</td>
+              <td class="cell" style="color:#ffffff;">W</td>
+              <td class="cell" style="color:#ffffff;">T</td>
+              <td class="cell" style="color:#ffffff;">F</td>
+              <td class="cell" style="color:#0066CC">S</td>
+            </tr>
+          </table>
+          {calendar}
+        </div>
+        <!-- END calendar -->
+        <!-- BEGIN category -->
+        <div class="linktitle">CATEGORIES</div>
+        <div class="linktext"> {category_list} </div>
+        <!-- END category -->
+
+        <!-- BEGIN archives -->
+        <div class="linktitle">ARCHIVES</div>
+        <div class="linktext"> {archives_list} </div>
+        <!-- END archives -->
+        <!-- BEGIN amazon -->
+        <div class="linktitle"> RECOMMEND </div>
+        <div class="linktext"> {amazon_item} </div>
+        <!-- END amazon -->
+        <div class="linktitle">MOBILE</div>
+        <div class="linktext">{site_qrcode}</div>
+      </div>
+      <div id="center">
+        <div class="pad">
+          <!-- BEGIN sequel -->
+          <div class="entry_navi"> {prev_entry} | <a href="./">main</a> | {next_entry} </div>
+          <!-- END sequel -->
+          <!-- BEGIN entry -->
+          <div class="entry-area">
+            <div class="entry_header">
+              <div class="entry_date">{entry_date}</div>
+              <div class="entry_author">author : {user_name} </div>
+              <div class="entry_title">{entry_title}</div>
+            </div>
+            <div class="entry_body">{entry_description}</div>
+            <a name="sequel"></a>
+            <div class="entry_more">{entry_sequel}</div>
+            <div class="entry_state">| {category_name} | {entry_time} | {comment_num} | {trackback_num} |
+              {pookmark_link}</div>
+          </div>
+          {trackback_auto_discovery}
+          <!-- END entry -->
+          <!-- BEGIN comment_area -->
+          <a name="comments"></a>
+          <div class="comment-area">
+            <div class="comment-title">コメント</div>
+            <!-- BEGIN comment -->
+            <div class="entry_body">{comment_description}</div>
+            <div class="entry_state">| {comment_name} | {comment_time} |</div>
+            <!-- END comment -->
+            <div class="comment-title">コメントする</div>
+            <div class="entry_body">
+              <form name="comment_area" id="comment_area" action="./?mode=comment" method="post">
+                <input type="hidden" name="entry_id" value="{entry_id}" style="width:250px;" class="form_color" />
+                <label for="name">name:</label>
+                <br />
+                <input type="text" tabindex="1" name="name" id="name" value="{cookie_name}" style="width:250px;"
+                  class="form_color" />
+                <br />
+                <label for="email">email:</label>
+                <br>
+                <input type="text" tabindex="2" name="email" id="email" value="{cookie_email}" style="width:250px;"
+                  class="form_color" />
+                <br />
+                <label for="url">url:</label>
+                <br>
+                <input type="text" tabindex="3" name="url" id="url" value="{cookie_url}" style="width:250px;"
+                  class="form_color" />
+                <br />
+                <label for="description">comments:</label>
+                <br />
+                <textarea tabindex="4" id="description" name="description" rows="10" cols="50" style="width:400px;"
+                  class="form_color_bg"></textarea>
+                <br />
+                <br />
+                <input tabindex="5" type="submit" value="コメント送信" onclick="javascript:setval();" />
+                <input type="checkbox" name="set_cookie" value="1" id="set_cookie">
+                <label for="set_cookie">Cookieに登録</label>
+              </form>
+            </div>
+          </div>
+          <!-- END comment_area -->
+          <!-- BEGIN trackback_area -->
+          <a name="trackback"></a>
+          <div class="comment-area">
+            <div class="trackback-title">この記事のトラックバックURL</div>
+            <div class="trackbackurl">{trackback_url}</div>
+            <div class="trackback-title">トラックバック</div>
+            <!-- BEGIN trackback -->
+            <div class="entry_body">{trackback_excerpt}</div>
+            <div class="entry_state"> | {trackback_title} 【{trackback_blog_name}】 より | {trackback_time} | </div>
+            <!-- END trackback -->
+          </div>
+          <!-- END trackback_area -->
+          <!-- BEGIN profile_area -->
+          <div class="entry">
+            <div class="entry_date">プロフィール</div>
+            <div class="entry_title">{profile_name}</div>
+            <div class="entry_body">{profile_description}</div>
+          </div>
+          <!-- END profile_area -->
+          <!-- BEGIN page -->
+          <div class="page">{prev_page_link} | {page_now}/{page_num}PAGES | {next_page_link}</div>
+          <!-- END page -->
+        </div>
+      </div>
+      <div id="right">
+        <!-- BEGIN freespace1 -->
+        <div class="linktitle">{freespace_title1}</div>
+        <div class="linktext">{freespace_contents1}</div>
+        <!-- END freespace1 -->
+        <!-- BEGIN freespace2 -->
+        <div class="linktitle">{freespace_title2}</div>
+        <div class="linktext">{freespace_contents2}</div>
+        <!-- END freespace2 -->
+        <!-- BEGIN freespace3 -->
+        <div class="linktitle">{freespace_title3}</div>
+        <div class="linktext">{freespace_contents3}</div>
+        <!-- END freespace3 -->
+        <!-- BEGIN freespace4 -->
+        <div class="linktitle">{freespace_title4}</div>
+        <div class="linktext">{freespace_contents4}</div>
+        <!-- END freespace4 -->
+        <!-- BEGIN freespace5 -->
+        <div class="linktitle">{freespace_title5}</div>
+        <div class="linktext">{freespace_contents5}</div>
+        <!-- END freespace5 -->
+        <!-- search -->
+        <div class="linktitle">SEARCH THIS SITE.</div>
+        <br />
+        <form method="get" action="">
+          <div class="search">
+            <input id="search" name="search" size="20" style="width:140px" class="form_color" />
+            <input type="submit" value="Search" class="button" />
+          </div>
+        </form>
+        <!-- /search/ -->
+        <!-- BEGIN selected_entry -->
+        <div class="linktitle">SELECTED ENTRIES</div>
+        <div class="linktext"> {selected_entry_list} </div>
+        <!-- END selected_entry -->
+        <!-- BEGIN recent_comment -->
+        <div class="linktitle">RECENT COMMENT</div>
+        <div class="linktext"> {recent_comment_list} </div>
+        <!-- END recent_comment -->
+        <!-- BEGIN recent_trackback -->
+        <div class="linktitle">RECENT TRACKBACK</div>
+        <div class="linktext"> {recent_trackback_list} </div>
+        <!-- END recent_trackback -->
+        <!-- BEGIN link -->
+        <div class="linktitle">LINKS</div>
+        <div class="linktext"> {link_list} </div>
+        <!-- END link -->
+        <!-- BEGIN profile -->
+        <div class="linktitle">PROFILE</div>
+        <div class="linktext"> {user_list} </div>
+        <!-- END profile -->
+        <!-- powered -->
+        <div class="linktitle">OTHERS</div>
+        <div class="linktext">
+          <ul>
+            <li><a href="./admin/">管理者ページ</a></li>
+            <li><a href="./?mode=rss">RSS1.0</a></li>
+            <li><a href="./?mode=atom">Atom0.3</a></li>
+          </ul>
+          <div class="jugem_bana"> {powered} </div>
+        </div>
+        <!-- /powered/ -->
+        <!-- BEGIN jugem_ad -->
+        <div class="linktitle">SPONSORED LINKS</div>
+        <div class="linktext"> {ad} </div>
+        <!-- END jugem_ad -->
+      </div>
+      <br class="clear" />
+      <!--footer -->
+      <div id="footer">
+        <div class="copyright" align="center">{copyright}</div>
+        <div class="linktext" align="right"><a href="#top">▲このページの先頭へ</a></div>
+      </div>
+
+      <!-- /footer/ -->
+    </div>
+
+  </div>
+
+
+</body>
+
+</html>

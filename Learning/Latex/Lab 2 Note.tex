@@ -1,0 +1,135 @@
+\documentclass[12pt]{article}
+\title{Lab 2 Note}
+\author{Lab Tutor}
+\date{March 2, 2026}
+
+\usepackage{graphicx}
+
+
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+\vskip 2cm 
+
+\listoftables
+\listoffigures
+
+\newpage
+
+
+
+\section{Table}
+\subsection{tabular environment}
+
+Example 1:\\
+\begin{tabular}{|c|c|}
+	\hline
+	True & False \\
+	\hline
+	logical 1 & logical 0 \\
+	\hline
+\end{tabular}
+
+\vspace{5mm}
+
+\noindent Example 2:\\
+\begin{center}
+\begin{tabular}{c|c}
+	$f(x)$ & $f'(x)$ \\
+	\hline
+	$x^{n}$ & $nx^{n-1}$ \\
+	$\sin x$ & $\cos x$
+\end{tabular}
+\end{center}
+
+\subsection{table environment}
+Positioning a table is easy if they're inside a \underline{float table environment}. We can also add captions to tables.\\
+
+\noindent Example 3:\\
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|l|}
+		\hline
+		True & False \\
+		\hline
+		logical 1 & logical 0 \\
+		\hline
+	\end{tabular}
+	\caption{Simple Table}
+\end{table}
+
+\noindent Example 4:\\
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		$p$ & $q$ & $p \vee q$ & $p \wedge q$\\
+		\hline
+		1 & 1 & 1 & 1\\
+		1 & 0 & 1 & 0\\
+		\hline
+	\end{tabular}
+	\caption{Truth Table}
+\end{table}
+
+
+\section{Figure}
+Extra package \texttt{graphicx} is required for inserting images to \LaTeX\,files. To declare the use of this package, include the following command in the preamble:
+\begin{center}
+	\verb|\usepackage{graphicx}|
+\end{center}
+
+\noindent Example 5:\\
+Here is one image captured \footnote{Tips: Press \textbf{Windows Key + Shift + S} to capture the screen on Windows system.} from the website:  https://www.latex-project.org/
+\includegraphics[scale=0.6]{latex}
+
+Similar to the table environment, we can also use a float figure environment to edit the position/caption of the image.\\
+
+\noindent Example 6:\\
+Plot the graphs of two functions $\sin x$ and $\cos x$ from 0 to $2\pi$.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\textwidth]{function image}
+	\caption{Python Plot}
+\end{figure}
+
+\emph{\footnotesize Note: the image files must be put into the same folder where the .tex file is saved.}
+
+\section{Text Font}
+\subsection{font styles}
+
+Common font styles used in \LaTeX:\\
+
+\noindent Example 7:\\
+normal text\\
+\textbf{boldface font}\\
+\textit{italics font}\\
+\textsc{smallcaps font}\\
+\texttt{typewriter font}\\
+\textsf{serif font}\\
+\underline{underline font}\\
+
+\subsection{font sizes}
+
+Different font sizes supported in \LaTeX:\\
+
+\noindent Example 8:\\
+Here is a {\tiny sample word}.\\
+Here is a {\scriptsize sample word}.\\
+Here is a {\footnotesize sample word}.\\
+Here is a {\small sample word}.\\
+Here is a sample word in normal size.\\
+Here is a {\large sample word}.\\
+Here is a {\Large sample word}.\\
+Here is a {\LARGE sample word}.\\
+Here is a {\huge sample word}.\\
+Here is a {\Huge sample word}.\\
+
+
+
+
+
+\end{document}

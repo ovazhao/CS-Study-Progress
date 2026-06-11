@@ -1,0 +1,404 @@
+/* CSS Document */
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+#contents a {
+  color: #9cdbd6;
+}
+
+#contents a:link {
+  color: #9cdbd6;
+  text-decoration: none;
+}
+
+#contents a:visited {
+  color: #9cdbd6;
+  text-decoration: none;
+}
+
+#contents a:active {
+  color: #FF3399;
+  text-decoration: none;
+}
+
+#contents a:hover {
+  color: #FF3399;
+  text-decoration: underline;
+}
+
+
+.site_title a {
+  color: #666666;
+  text-decoration: none;
+}
+
+.site_title a:link {
+  color: #ca0072;
+  text-decoration: none;
+}
+
+.site_title a:visited {
+  color: #ca0072;
+  text-decoration: none;
+}
+
+.site_title a:active {
+  color: #ca0072;
+  text-decoration: none;
+}
+
+.site_title a:hover {
+  color: #ca0072;
+  text-decoration: none;
+}
+
+#footer a {
+  color: #9cdbd6;
+}
+
+#footer a:link {
+  color: #9cdbd6;
+  text-decoration: none;
+}
+
+#footer a:visited {
+  color: #9cdbd6;
+  text-decoration: none;
+}
+
+#footer a:active {
+  color: #FF3399;
+  text-decoration: none;
+}
+
+#footer a:hover {
+  color: #FF3399;
+  text-decoration: underline;
+}
+
+
+body {
+  background-color: #e2e2d0;
+  text-align: center;
+  margin-right: auto;
+  margin-left: auto;
+  color: #9cdbd6;
+  cursor: url('https://img-cdn.jg.jugem.jp/4fc/3945207/20250728_4074838.png'), auto;
+}
+
+a:hover {
+  cursor: url("https://img-cdn.jg.jugem.jp/4fc/3945207/20250728_4074840.png"), pointer;
+}
+
+input,
+textarea,
+input[type="text"],
+#search {
+  cursor: url("https://img-cdn.jg.jugem.jp/4fc/3945207/20250728_4074839.png"), text !important;
+}
+
+input[type="checkbox"],
+label[for="set_cookie"] {
+  cursor: url("https://img-cdn.jg.jugem.jp/4fc/3945207/20250728_4074840.png"), pointer !important;
+}
+
+button,
+input[type="submit"],
+input[type="button"] {
+  cursor: url("https://img-cdn.jg.jugem.jp/4fc/3945207/20250728_4074840.png"), pointer !important;
+}
+
+.clear {
+  clear: both;
+  font: 0px/0px sans-serif;
+}
+
+#layout {
+  margin: 40px auto 0;
+  width: 820px;
+  text-align: left;
+  background-image: url(http://img-cdn.jg.jugem.jp/793/342770/20080811_376551.png);
+  padding-bottom: 3px;
+}
+
+
+#header {
+  background-image: url(https://img-cdn.jg.jugem.jp/4fc/3945207/20250818_4084732.png);
+  background-repeat: no-repeat;
+  padding: 0px;
+  margin: 0px;
+  height: 214px;
+}
+
+#contents {
+  padding-top: 10px;
+}
+
+#contents #left {
+  float: left;
+  width: 180px;
+  padding-left: 10px;
+}
+
+#contents #center {
+  float: left;
+  width: 435px;
+}
+
+#contents #center .pad {
+  padding: 0px 10px;
+}
+
+#contents #right {
+  float: right;
+  padding-right: 10px;
+  width: 160px;
+}
+
+#footer {
+  clear: both;
+}
+
+
+
+h1 {
+  font-size: 25px;
+  margin: 0px;
+  padding: 0px;
+}
+
+ul {
+  margin: 0px 0px 0px 15px;
+  padding: 0px;
+
+}
+
+div,
+td {
+  font-family: verdana, arial, sans-serif
+}
+
+.form_color {
+  border: 1px solid #666666;
+  background-color: #ad8fb3;
+}
+
+.form_color_bg {
+  border: 1px solid #666666;
+  background: url(https://img-cdn.jg.jugem.jp/4fc/3945207/20250818_4084731.png) no-repeat right bottom;
+}
+
+.site_title {
+  margin: 0px 0px 5px 70px;
+  padding: 40px 0px 0px 0px;
+}
+
+
+.description {
+  font-size: 14px;
+  color: #9cdbd6;
+  margin: 0px 0px 0px 70px;
+}
+
+.entry-area {
+  color: #ffffff;
+}
+
+.entry_navi {
+  font-size: 12px;
+  margin: 15px 0px 15px 0px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.entry_header {
+  margin: 0px;
+  padding: 0px;
+  width: 435px;
+  background-image: url(https://img-cdn.jg.jugem.jp/4fc/3945207/20250819_4085544.png);
+  background-repeat: no-repeat;
+  height: 125px;
+}
+
+.entry {
+  margin: 0px;
+  padding: 0px;
+  width: 435px;
+  background-image: url(https://img-cdn.jg.jugem.jp/4fc/3945207/20250819_4085544.png);
+  background-repeat: no-repeat;
+  height: 125px;
+}
+
+.entry_date {
+  font-size: 18px;
+  font-weight: bolder;
+  color: #9cdbd6;
+  text-align: left;
+  padding: 50px 0px 0px 110px;
+  font-family: verdana;
+}
+
+.entry_title {
+  font-size: 15px;
+  font-weight: bolder;
+  color: #FFFFFF;
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 110px;
+}
+
+.entry_body {
+  font-size: 12px;
+  line-height: 170%;
+  margin: 0px;
+  padding: 0px 5px 0px;
+}
+
+.entry_author {
+  font-size: 10px;
+  color: #FFFFFF;
+  margin: 0px 0px;
+  padding: 0px 10px;
+  text-align: right;
+}
+
+.entry_more {
+  font-size: 12px;
+  line-height: 170%;
+  margin: 0px;
+  padding: 0px 5px;
+}
+
+.entry_state {
+  font-size: 11px;
+  margin: 0px 0px 30px;
+  background-image: url(https://img-cdn.jg.jugem.jp/4fc/3945207/20250819_4085545.png);
+  background-repeat: no-repeat;
+  height: 79px;
+  padding-top: 30px;
+}
+
+blockquote {
+  font-size: 11px;
+  margin: 20px 10px 20px 10px;
+  padding: 10px;
+  border-left: 3px solid #9cdbd6;
+}
+
+.comment-area {
+  color: #ffffff;
+}
+
+.comment-title {
+  height: 37px;
+  font-size: 15px;
+  font-weight: bolder;
+  margin: 0px;
+  padding: 25px 0px 0px 0px;
+}
+
+.trackback-title {
+  height: 37px;
+  font-size: 15px;
+  font-weight: bolder;
+  margin: 0px;
+  padding: 25px 0px 0px 0px;
+}
+
+.trackbackurl {
+  font-size: 9pt;
+  margin: 10px;
+  padding: 10px 20px;
+  color: #666666;
+  background-color: #9cdbd6;
+  border: 1px solid #9cdbd6;
+}
+
+.pict {
+  border: 0px none;
+}
+
+.page {
+  font-size: 12px;
+  padding: 10px 0px 0px 0px;
+  border: none;
+  text-align: center;
+}
+
+
+.linktitle {
+  font-family: verdana;
+  font-size: 12px;
+  height: 22px;
+  color: #FFFFFF;
+  line-height: 170%;
+  margin: 10px 0px 0px;
+  background-image: url(https://img-cdn.jg.jugem.jp/4fc/3945207/20250818_4085170.png);
+  background-position: left;
+  background-repeat: no-repeat;
+  background-position: left;
+  padding-left: 10px;
+  font-weight: bolder;
+  letter-spacing: 0.05em;
+}
+
+
+.linktext {
+  font-size: 11px;
+  line-height: 170%;
+  margin: 7px 0px 25px 0px;
+  padding: 0px 10px;
+}
+
+.search {
+  font-size: 10px;
+  color: #333333;
+  line-height: 170%;
+  margin: 0px 0px 5px 0px;
+  padding: 0px 10px;
+}
+
+.button {
+  margin: 5px 0 0 0;
+}
+
+.copyright {
+  font-size: 10px;
+  line-height: 170%;
+  margin: 0px;
+  padding-top: 10px;
+  color: #FFFFFF;
+  padding-bottom: 10px;
+}
+
+
+
+.calendar {
+  font-family: 'Verdana';
+  font-size: 10px;
+  margin: 5px 0px 20px 0px;
+  width: 184px;
+  background-image: url(https://img-cdn.jg.jugem.jp/4fc/3945207/20250818_4084725.png);
+  background-size: 184px 126px;
+  background-repeat: no-repeat;
+}
+
+.calendar_month {
+  font-family: "Verdana";
+  margin-bottom: 10px;
+  font-size: 10px;
+}
+
+.cell {
+  width: 25px;
+  height: 20px;
+  padding: 0px;
+  text-align: left;
+  font-size: 10px;
+}
+
+.jugem_bana {
+  margin: 20px 1px 10px 0px;
+}

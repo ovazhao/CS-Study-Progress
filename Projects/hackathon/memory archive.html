@@ -1,0 +1,2514 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <title>ARCHIVE OS v3.2</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      background: #008080;
+      color: #000;
+      font-family: Tahoma, 'Microsoft Sans Serif', 'MS Sans Serif', Arial, sans-serif;
+      font-size: 13px;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      cursor: default;
+      user-select: none
+    }
+
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column
+    }
+
+    .screen.active {
+      display: flex
+    }
+
+    /* BOOT */
+    #s-boot {
+      align-items: center;
+      justify-content: center;
+      background: #008080
+    }
+
+    .boot-box {
+      border: 2px outset #dfdfdf;
+      padding: 28px 44px;
+      text-align: center;
+      background: #c0c0c0
+    }
+
+    .boot-title {
+      font-size: 22px;
+      letter-spacing: 8px;
+      color: #000080;
+      margin-bottom: 6px;
+      font-weight: bold
+    }
+
+    .boot-ver {
+      font-size: 11px;
+      color: #808080;
+      letter-spacing: 3px;
+      margin-bottom: 18px
+    }
+
+    .boot-log {
+      font-size: 10px;
+      color: #000;
+      text-align: left;
+      line-height: 1.9
+    }
+
+    .boot-log span {
+      display: block
+    }
+
+    @keyframes blink {
+
+      0%,
+      49% {
+        opacity: 1
+      }
+
+      50%,
+      100% {
+        opacity: 0
+      }
+    }
+
+    .cur {
+      animation: blink 1s infinite
+    }
+
+    .boot-progress {
+      width: 200px;
+      height: 10px;
+      background: #fff;
+      border: 2px inset #808080;
+      margin: 10px auto 0;
+      overflow: hidden
+    }
+
+    .boot-progress-fill {
+      height: 100%;
+      background: #000080;
+      width: 0;
+      transition: width .3s
+    }
+
+    /* DESKTOP */
+    #s-desk {
+      background: #008080
+    }
+
+    .menubar {
+      background: #c0c0c0;
+      border-bottom: 2px outset #dfdfdf;
+      padding: 3px 10px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #000;
+      letter-spacing: 1px
+    }
+
+    .desk-area {
+      flex: 1;
+      position: relative;
+      padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: 8px
+    }
+
+    .d-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      width: 76px;
+      padding: 6px 4px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 10px;
+      text-align: center;
+      letter-spacing: .5px;
+      text-shadow: 1px 1px 1px #000
+    }
+
+    .d-icon:hover,
+    .d-icon.sel {
+      background: rgba(0, 0, 128, .35);
+      outline: 1px dotted #fff
+    }
+
+    .d-icon .ic {
+      font-size: 32px;
+      line-height: 1
+    }
+
+    .taskbar {
+      background: #c0c0c0;
+      border-top: 2px outset #dfdfdf;
+      padding: 3px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #000
+    }
+
+    .tb-start {
+      background: #c0c0c0;
+      border: 2px outset #dfdfdf;
+      padding: 2px 12px;
+      cursor: pointer;
+      letter-spacing: 2px;
+      font-family: inherit;
+      color: #000;
+      font-weight: bold
+    }
+
+    .tb-start:hover {
+      background: #d4d0c8
+    }
+
+    .tb-clock {
+      border: 2px inset #808080;
+      padding: 2px 8px;
+      color: #000;
+      background: #c0c0c0
+    }
+
+    /* WINDOW */
+    .ww {
+      position: absolute;
+      background: #c0c0c0;
+      border: 2px outset #dfdfdf;
+      box-shadow: 1px 1px 0 #000;
+      min-width: 360px
+    }
+
+    .ww-bar {
+      background: #808080;
+      padding: 3px 5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      border-bottom: none;
+      cursor: move;
+      color: #c0c0c0
+    }
+
+    .ww-bar.focus {
+      background: #000080;
+      color: #fff
+    }
+
+    .ww-ttl {
+      flex: 1;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1px
+    }
+
+    .ww-btn {
+      width: 16px;
+      height: 14px;
+      background: #c0c0c0;
+      border: 2px outset #dfdfdf;
+      font-size: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #000
+    }
+
+    .ww-btn:hover {
+      background: #d4d0c8
+    }
+
+    .ww-resize {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 12px;
+      height: 12px;
+      cursor: se-resize;
+      background: linear-gradient(135deg, transparent 50%, #808080 50%)
+    }
+
+    /* FILE TREE */
+    .ftree {
+      font-size: 11px;
+      line-height: 2;
+      overflow-y: auto;
+      padding: 8px 12px;
+      background: #fff
+    }
+
+    .fi {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 1px 4px;
+      cursor: pointer;
+      white-space: nowrap
+    }
+
+    .fi:hover {
+      background: #000080;
+      color: #fff
+    }
+
+    .fi.sel {
+      background: #000080;
+      color: #fff;
+      outline: none
+    }
+
+    .fi.corrupted .fi-ic {
+      opacity: .4
+    }
+
+    .fi.corrupted .fi-nm {
+      color: #808080;
+      text-decoration: line-through
+    }
+
+    .fi.corrupted .fi-tag {
+      color: #808080
+    }
+
+    .fi-indent {
+      padding-left: 22px
+    }
+
+    .fi-indent2 {
+      padding-left: 42px
+    }
+
+    .fi-ic {
+      font-size: 14px
+    }
+
+    .fi-nm {
+      color: #000
+    }
+
+    .fi.corrupted .fi-nm {
+      color: #808080
+    }
+
+    .fi-tag {
+      font-size: 9px;
+      color: #808080;
+      margin-left: 4px
+    }
+
+    .fi-expand {
+      font-size: 9px;
+      color: #808080;
+      margin-left: 2px;
+      min-width: 10px
+    }
+
+    /* PROPS POPUP */
+    .prop-popup {
+      position: absolute;
+      background: #c0c0c0;
+      border: 2px outset #dfdfdf;
+      z-index: 200;
+      min-width: 280px;
+      box-shadow: 1px 1px 0 #000
+    }
+
+    .prop-bar {
+      background: #000080;
+      padding: 3px 6px;
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+      color: #fff
+    }
+
+    .prop-body {
+      padding: 12px 14px;
+      font-size: 11px;
+      line-height: 1.9;
+      color: #000
+    }
+
+    .prop-field {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 2px
+    }
+
+    .prop-label {
+      color: #808080;
+      min-width: 80px
+    }
+
+    .prop-val {
+      color: #000
+    }
+
+    .prop-quote {
+      color: #000080;
+      font-style: italic;
+      border-left: 2px solid #808080;
+      padding-left: 8px;
+      margin-top: 8px;
+      line-height: 1.8;
+      white-space: pre-line
+    }
+
+    /* DIALOG */
+    .dlg {
+      position: absolute;
+      background: #c0c0c0;
+      border: 2px outset #dfdfdf;
+      z-index: 300;
+      min-width: 300px;
+      box-shadow: 1px 1px 0 #000
+    }
+
+    .dlg-bar {
+      background: #000080;
+      color: #fff;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      cursor: move
+    }
+
+    .dlg-body {
+      padding: 16px 20px;
+      font-size: 12px;
+      line-height: 2;
+      color: #000;
+      white-space: pre-line
+    }
+
+    .dlg-input {
+      background: #fff;
+      border: 2px inset #808080;
+      color: #000;
+      font-family: inherit;
+      font-size: 12px;
+      width: 100%;
+      padding: 4px 6px;
+      margin-top: 8px;
+      outline: none
+    }
+
+    .dlg-input:focus {
+      border-color: #000080
+    }
+
+    .dlg-btns {
+      padding: 0 20px 14px;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end
+    }
+
+    .btn {
+      background: #c0c0c0;
+      border: 2px outset #dfdfdf;
+      color: #000;
+      padding: 4px 18px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      letter-spacing: 1px
+    }
+
+    .btn:hover {
+      background: #d4d0c8;
+      color: #000
+    }
+
+    .btn:active {
+      border-style: inset
+    }
+
+    .btn.primary {
+      background: #c0c0c0;
+      color: #000;
+      font-weight: bold;
+      border: 2px outset #dfdfdf
+    }
+
+    .btn.primary:hover {
+      background: #d4d0c8
+    }
+
+    .btn.primary:active {
+      border-style: inset
+    }
+
+    /* STATUS BARS */
+    .cap-row,
+    .id-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 12px;
+      background: #c0c0c0;
+      font-size: 10px
+    }
+
+    .cap-row {
+      border-top: 1px solid #808080
+    }
+
+    .cap-label {
+      color: #000;
+      min-width: 72px
+    }
+
+    .cap-bar-wrap {
+      flex: 1;
+      height: 9px;
+      background: #fff;
+      border: 2px inset #808080
+    }
+
+    .cap-bar-fill {
+      height: 100%;
+      background: #000080;
+      transition: width .3s
+    }
+
+    .cap-bar-fill.danger {
+      background: #ff0000
+    }
+
+    .id-bar-fill {
+      height: 100%;
+      background: #808080;
+      transition: width .3s
+    }
+
+    .cap-num {
+      color: #000;
+      min-width: 36px;
+      text-align: right
+    }
+
+    /* GUIDE BANNER */
+    .guide-banner {
+      background: #ffffc0;
+      border-bottom: 1px solid #808080;
+      padding: 5px 12px;
+      font-size: 10px;
+      color: #000;
+      letter-spacing: .5px
+    }
+
+    .guide-banner span {
+      color: #000080
+    }
+
+    /* TXT VIEW */
+    .txt-file {
+      padding: 12px 14px;
+      font-size: 11px;
+      color: #000;
+      line-height: 2.2;
+      white-space: pre-line;
+      background: #fff
+    }
+
+    .txt-file .em {
+      color: #000080
+    }
+
+    /* ENDING */
+    #s-end {
+      align-items: center;
+      justify-content: center;
+      background: #008080
+    }
+
+    .end-box {
+      max-width: 440px;
+      width: 90%;
+      font-size: 13px;
+      color: #000;
+      line-height: 2.6;
+      text-align: left;
+      background: #c0c0c0;
+      border: 2px outset #dfdfdf;
+      padding: 20px 28px
+    }
+
+    .end-box .headline {
+      color: #000080;
+      font-size: 14px;
+      letter-spacing: 4px;
+      margin-bottom: 18px;
+      display: block;
+      font-weight: bold
+    }
+
+    .end-box .divider {
+      border-top: 1px solid #808080;
+      margin: 16px 0
+    }
+
+    .end-box .dim {
+      color: #808080;
+      font-size: 10px
+    }
+
+    /* ROUND BADGE */
+    .round-badge {
+      font-size: 9px;
+      color: #000;
+      border: 2px inset #808080;
+      padding: 1px 6px;
+      letter-spacing: 2px;
+      background: #c0c0c0
+    }
+
+    /* PIXEL ICONS via CSS */
+    .px-folder::before {
+      content: '▪';
+      font-size: 18px;
+      color: #808000
+    }
+
+    .px-folder-open::before {
+      content: '▫';
+      font-size: 18px;
+      color: #c0c000
+    }
+
+    .px-thing::before {
+      content: '◈';
+      font-size: 14px;
+      color: #808080
+    }
+
+    .px-txt::before {
+      content: '≡';
+      font-size: 15px;
+      color: #000080
+    }
+
+    .px-corrupted::before {
+      content: '▨';
+      font-size: 15px;
+      color: #808080
+    }
+
+    .px-exe::before {
+      content: '▣';
+      font-size: 15px;
+      color: #000080
+    }
+
+    .px-readonly::before {
+      content: '◌';
+      font-size: 14px;
+      color: #808080
+    }
+
+    /* SHAKE */
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0)
+      }
+
+      15% {
+        transform: translateX(-6px)
+      }
+
+      30% {
+        transform: translateX(5px)
+      }
+
+      45% {
+        transform: translateX(-4px)
+      }
+
+      60% {
+        transform: translateX(3px)
+      }
+
+      75% {
+        transform: translateX(-2px)
+      }
+
+      90% {
+        transform: translateX(1px)
+      }
+    }
+
+    .shaking {
+      animation: shake .45s ease-in-out;
+    }
+
+    /* ICON FLASH */
+    @keyframes iconFlash {
+
+      0%,
+      100% {
+        outline: 2px solid transparent;
+        outline-offset: 2px
+      }
+
+      50% {
+        outline: 2px solid #fff;
+        outline-offset: 2px
+      }
+    }
+
+    .icon-flash {
+      animation: iconFlash 1s ease-in-out infinite
+    }
+
+    /* ENDING NOTIFICATION */
+    @keyframes notifSlideIn {
+      from {
+        transform: translateX(calc(100% + 20px))
+      }
+
+      to {
+        transform: translateX(0)
+      }
+    }
+
+    .ending-notif {
+      position: fixed;
+      bottom: 40px;
+      right: 12px;
+      background: #c0c0c0;
+      border: 2px outset #dfdfdf;
+      box-shadow: 1px 1px 0 #000;
+      padding: 0;
+      min-width: 200px;
+      z-index: 100000;
+      transform: translateX(calc(100% + 20px));
+      animation: notifSlideIn .5s ease-out forwards;
+      cursor: pointer
+    }
+
+    .ending-notif-bar {
+      background: #000080;
+      padding: 2px 8px;
+      font-size: 9px;
+      color: #c0c0c0;
+      letter-spacing: 2px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .ending-notif-body {
+      padding: 10px 14px;
+      font-size: 11px;
+      color: #000;
+      line-height: 1.8
+    }
+
+    .ending-notif-title {
+      font-size: 10px;
+      color: #808080;
+      letter-spacing: 1px;
+      margin-bottom: 4px
+    }
+
+    .ending-notif-name {
+      font-size: 13px;
+      color: #000;
+      font-weight: bold;
+      letter-spacing: 1px
+    }
+
+    /* START MENU */
+    .start-menu {
+      position: absolute;
+      bottom: 28px;
+      left: 4px;
+      background: #c0c0c0;
+      border: 2px outset #dfdfdf;
+      z-index: 99999;
+      display: none;
+      min-width: 160px;
+      box-shadow: 2px -1px 0 #000
+    }
+
+    .start-menu-banner {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 24px;
+      background: #000080;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      color: #c0c0c0;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 0
+    }
+
+    .start-menu-items {
+      margin-left: 24px
+    }
+
+    .start-menu-item {
+      padding: 6px 16px 6px 8px;
+      font-size: 11px;
+      color: #000;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .start-menu-item:hover {
+      background: #000080;
+      color: #fff
+    }
+
+    .start-menu-sep {
+      height: 1px;
+      background: #808080;
+      margin: 2px 4px 2px 0
+    }
+
+    /* SCANLINES */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .03) 0px, rgba(0, 0, 0, .03) 1px, transparent 1px, transparent 2px);
+      pointer-events: none;
+      z-index: 9999
+    }
+
+    ::-webkit-scrollbar {
+      width: 16px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #c0c0c0;
+      border: 1px solid #808080
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #c0c0c0;
+      border: 2px outset #dfdfdf
+    }
+
+    /* UNLOCK CARDS */
+    .unlock-stack {
+      position: fixed;
+      bottom: 36px;
+      right: 12px;
+      z-index: 99990;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: flex-end;
+      gap: 5px
+    }
+
+    @keyframes unlockCardIn {
+      from {
+        transform: translateY(calc(100% + 5px));
+        opacity: 0
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1
+      }
+    }
+
+    .unlock-card {
+      background: #c0c0c0;
+      border: 2px outset #dfdfdf;
+      box-shadow: 1px 1px 0 #000;
+      width: 228px;
+      padding: 9px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: unlockCardIn .4s cubic-bezier(.22, .68, 0, 1.2) both
+    }
+
+    .unlock-card-icon {
+      font-size: 24px;
+      line-height: 1;
+      flex-shrink: 0
+    }
+
+    .unlock-card-texts {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0
+    }
+
+    .unlock-card-label {
+      font-size: 9px;
+      color: #808080;
+      letter-spacing: 1px;
+      line-height: 1.4
+    }
+
+    .unlock-card-name {
+      font-size: 12px;
+      color: #000;
+      font-weight: bold;
+      letter-spacing: .5px;
+      line-height: 1.4
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 开机界面 -->
+  <div id="s-boot" class="screen active">
+    <div class="boot-box">
+      <div class="boot-title">ARCHIVE OS</div>
+      <div class="boot-ver">版本 3.2 &nbsp;·&nbsp; 记忆归档管理系统</div>
+      <div class="boot-progress">
+        <div class="boot-progress-fill" id="bpf"></div>
+      </div>
+      <div class="boot-log" style="margin-top:16px;max-width:340px">
+        <span id="bl1" style="display:none">正在初始化记忆子系统……</span>
+        <span id="bl2" style="display:none">加载归档索引……</span>
+        <span id="bl3" style="display:none">完整性检查…… <span style="color:#000080">通过</span></span>
+        <span id="bl4" style="display:none">人格模块已加载。</span>
+        <span id="bl5" style="display:none;color:#000080">欢迎回来。<span class="cur">_</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 轮次过渡界面 -->
+  <div id="s-trans" class="screen" style="align-items:center;justify-content:center">
+    <div class="boot-box">
+      <div class="boot-title">ARCHIVE OS</div>
+      <div class="boot-ver">记忆归档管理系统</div>
+      <div class="boot-progress">
+        <div class="boot-progress-fill" id="tpf"></div>
+      </div>
+      <div class="boot-log" style="margin-top:16px;max-width:340px" id="transLog"></div>
+    </div>
+  </div>
+
+  <!-- 桌面 -->
+  <div id="s-desk" class="screen">
+    <div class="menubar">
+      <span>ARCHIVE OS &nbsp;·&nbsp; 记忆归档管理系统</span>
+      <span id="dt-time">--:--</span>
+    </div>
+    <div class="desk-area" id="deskArea">
+      <div class="d-icon" ondblclick="openRecycle()">
+        <span class="ic" id="trashIcon">🗑️</span><span>废纸篓</span>
+      </div>
+      <div class="d-icon" id="iconSystem" ondblclick="openSystem()">
+        <span class="ic">🗂️</span><span>系统</span>
+      </div>
+      <div class="d-icon sel" id="iconArchive" ondblclick="startGame()">
+        <span class="ic">💾</span><span id="archiveLabel">记忆归档.exe</span>
+      </div>
+    </div>
+    <div class="taskbar">
+      <div style="position:relative">
+        <button class="tb-start" id="btnStart" onclick="toggleStartMenu()">▶ 开始</button>
+        <div class="start-menu" id="startMenu">
+          <div class="start-menu-banner">ARCHIVE OS</div>
+          <div class="start-menu-items">
+            <div class="start-menu-item" onclick="void(0)">📁 记忆管理器</div>
+            <div class="start-menu-item" onclick="void(0)">📋 系统日志</div>
+            <div class="start-menu-item" onclick="void(0)">🔍 搜索记忆</div>
+            <div class="start-menu-item" onclick="void(0)">⚙ 系统设置</div>
+            <div class="start-menu-item" onclick="void(0)">❓ 帮助</div>
+            <div class="start-menu-sep"></div>
+            <div class="start-menu-item" onclick="restartGame()">重新启动</div>
+            <div class="start-menu-item" onclick="shutdownGame()">关机</div>
+          </div>
+        </div>
+      </div>
+      <span class="round-badge" id="roundBadge" style="display:none"></span>
+      <span class="tb-clock" id="tbClock">--:--</span>
+      <button class="btn" style="font-size:9px;padding:1px 10px;letter-spacing:1px"
+        onclick="restartGame()">重新启动</button>
+    </div>
+  </div>
+
+  <!-- 结局界面 -->
+  <div id="s-end" class="screen">
+    <div class="end-box" id="endBox"></div>
+  </div>
+
+  <script>
+    // ============================================================
+    //  音效
+    // ============================================================
+    const sfxError = new Audio('error-fizzle.wav');
+    const sfxClick = new Audio('buttonclick1.wav');
+    sfxError.volume = 0.5; sfxClick.volume = 0.4;
+    function playError() { sfxError.currentTime = 0; sfxError.play().catch(() => { }); }
+    function playClick() { sfxClick.currentTime = 0; sfxClick.play().catch(() => { }); }
+
+    // ============================================================
+    //  游戏状态
+    // ============================================================
+    let round = 1;
+    let winZ = 10;
+    let propZ = 100;
+    let dlgZ = 10000;
+    let expandedFolders = {};
+    let deletedCount = 0;   // 用于判断结局E（旁观者）
+    let notDeleteRevealed = false; // 第二轮"不要删除.txt"是否已揭示
+    let trashFull = false; // 废纸篓是否有内容
+    let endingReached = false; // 是否已到达结局（影响关机行为）
+
+    const MEMORIES = {
+      mother: { name: '母亲', cap: 15, iv: 35, parent: null, children: ['home', 'dinner', 'rain'], item: 'old_key', deleted: false, corrupted: false },
+      first_love: { name: '初恋', cap: 15, iv: 30, parent: null, children: ['seaside', 'station', 'confession'], item: 'old_phone', deleted: false, corrupted: false },
+      university: { name: '大学', cap: 10, iv: 8, parent: null, children: ['dorm', 'graduation', 'club'], item: 'student_id', deleted: false, corrupted: false },
+      childhood: { name: '童年', cap: 10, iv: 20, parent: null, children: ['playground', 'grandma', 'summer'], item: 'paper_envelope', deleted: false, corrupted: false },
+      home: { name: '家', cap: 5, iv: 12, parent: 'mother', children: ['hallway'], deleted: false, corrupted: false },
+      dinner: { name: '晚饭', cap: 4, iv: 10, parent: 'mother', children: ['apron'], deleted: false, corrupted: false },
+      rain: { name: '雨天', cap: 3, iv: 8, parent: 'mother', children: [], deleted: false, corrupted: false },
+      seaside: { name: '海边', cap: 5, iv: 11, parent: 'first_love', children: ['ferry'], deleted: false, corrupted: false },
+      station: { name: '车站', cap: 4, iv: 9, parent: 'first_love', children: [], item: 'train_ticket', deleted: false, corrupted: false },
+      confession: { name: '告白', cap: 3, iv: 7, parent: 'first_love', children: ['draft_sms'], deleted: false, corrupted: false },
+      dorm: { name: '宿舍', cap: 3, iv: 4, parent: 'university', children: ['library'], deleted: false, corrupted: false },
+      graduation: { name: '毕业照', cap: 3, iv: 5, parent: 'university', children: [], item: 'report_card', deleted: false, corrupted: false },
+      club: { name: '社团', cap: 3, iv: 3, parent: 'university', children: ['activity_photo'], deleted: false, corrupted: false },
+      playground: { name: '操场', cap: 4, iv: 8, parent: 'childhood', children: [], deleted: false, corrupted: false },
+      grandma: { name: '外婆', cap: 4, iv: 12, parent: 'childhood', children: ['letter'], deleted: false, corrupted: false },
+      summer: { name: '夏天', cap: 3, iv: 7, parent: 'childhood', children: ['kite'], deleted: false, corrupted: false },
+      hallway: { name: '玄关', cap: 2, iv: 5, parent: 'home', itemLocked: 'old_key', children: [], deleted: false, corrupted: false, unlocked: false },
+      apron: { name: '围裙', cap: 2, iv: 6, parent: 'dinner', itemLocked: 'old_key', children: [], deleted: false, corrupted: false, unlocked: false },
+      ferry: { name: '渡轮', cap: 2, iv: 5, parent: 'seaside', itemLocked: 'old_phone', children: [], deleted: false, corrupted: false, unlocked: false },
+      draft_sms: { name: '短信', cap: 2, iv: 6, parent: 'confession', itemLocked: 'old_phone', children: [], deleted: false, corrupted: false, unlocked: false },
+      activity_photo: { name: '社团活动', cap: 2, iv: 4, parent: 'club', itemLocked: 'student_id', children: [], deleted: false, corrupted: false, unlocked: false },
+      library: { name: '图书馆', cap: 2, iv: 3, parent: 'dorm', itemLocked: 'student_id', children: [], deleted: false, corrupted: false, unlocked: false },
+      letter: { name: '信', cap: 2, iv: 7, parent: 'grandma', itemLocked: 'paper_envelope', children: [], deleted: false, corrupted: false, unlocked: false },
+      kite: { name: '风筝', cap: 2, iv: 5, parent: 'summer', itemLocked: 'paper_envelope', children: [], deleted: false, corrupted: false, unlocked: false },
+      // V1.1 新物件解锁节点
+      platform: { name: '站台', cap: 2, iv: 4, parent: 'station', itemLocked: 'train_ticket', children: [], deleted: false, corrupted: false, unlocked: false },
+      grade: { name: '成绩', cap: 2, iv: 2, parent: 'graduation', itemLocked: 'report_card', children: [], deleted: false, corrupted: false, unlocked: false },
+      // V1.1 第三层只读节点（不可删除，不占容量）
+      smell: { name: '气味', cap: 0, iv: 0, parent: 'dinner', readonly: true, children: [], deleted: false, corrupted: false },
+      voice: { name: '声音', cap: 0, iv: 0, parent: 'rain', readonly: true, children: [], deleted: false, corrupted: false },
+      smell_summer: { name: '夏天的味道', cap: 0, iv: 0, parent: 'summer', readonly: true, children: [], deleted: false, corrupted: false },
+      grandma_hands: { name: '外婆的手', cap: 0, iv: 0, parent: 'grandma', readonly: true, children: [], deleted: false, corrupted: false },
+    };
+
+    const ITEMS = {
+      old_key: { name: '老家钥匙', desc: '钥匙已经生锈了。\n但你仍然记得开门的方向。', unlocks: ['hallway', 'apron'] },
+      old_phone: { name: '旧手机', desc: '草稿箱里有一条从未发出的消息：\n「其实我也喜欢你。」', unlocks: ['ferry', 'draft_sms'] },
+      student_id: { name: '学生证', desc: '照片里的你笑得有些傻。\n有效期：2018—2022。', unlocks: ['activity_photo', 'library'] },
+      paper_envelope: { name: '纸信封', desc: '信封已经发黄了。\n邮戳的日期你认不出来了，但字迹你认得。\n你一直没有拆开。', unlocks: ['letter', 'kite'] },
+      train_ticket: { name: '一张车票', desc: '票面已经看不清了。\n目的地那一栏，你已经记不住写的是哪里。\n但你留着它。', unlocks: ['platform'] },
+      report_card: { name: '一张成绩单', desc: '你以为你会记得那些数字。\n后来发现，你连记它们的必要都忘了。', unlocks: ['grade'] },
+    };
+
+    const QUOTES = {
+      mother: '她把最好的都留给了你，自己从不提。',
+      first_love: '你以为还有时间，但那趟车开走了。',
+      university: '那几年你以为会记一辈子，后来越来越模糊。',
+      childhood: '那年夏天特别长，你以为它永远不会结束。',
+      home: '周末回家，门口总会有双换好的拖鞋。',
+      dinner: '她炒的菜有点咸，但你从来没说过。',
+      rain: '有一次你忘带伞，她站在校门口等了两个小时。',
+      seaside: '你们走了很久，谁都没有先开口。',
+      station: '列车开走的那一刻，你转过身，她还站在那里。',
+      confession: '你说了，但说晚了。',
+      dorm: '四个人睡上下铺，夏天太热，你们就搬椅子坐在走廊聊到深夜。',
+      graduation: '你站在最左边，有点挤，但没人想离开镜头。',
+      club: '你加入了一个没什么人的社团，因为海报贴得歪歪的，看起来很好玩。',
+      playground: '放学铃声还没响，你已经跑出了教室。',
+      grandma: '她总是把最大的那块留给你，自己只说不饿。',
+      summer: '那年夏天特别长，你以为它永远不会结束。',
+      hallway: '一把生锈的钥匙，开一扇不再回去的门。',
+      apron: '那条蓝色围裙洗了很多年，但她从没换过。',
+      ferry: '最后一班摆渡没赶上，你们在岸边坐到天黑。',
+      draft_sms: '草稿箱：「其实我也喜欢你。」\n发送时间：从未。',
+      activity_photo: '第一次办活动，来了三个人，但你们笑了整晚。',
+      library: '你在那里睡着过很多次。有人帮你盖上了外套。',
+      letter: '信封发黄了，字迹你认得，但你一直没有拆开。',
+      kite: '断了线，飞到你再也找不到的地方。',
+      platform: '你在那里等过很多次。有时候是等人来，有时候是等人走。',
+      grade: '那些数字曾经让你焦虑过，骄傲过，哭过。现在它们就是几个数字。',
+      smell: '这已经不是一条记忆了。只是某种还没有名字的东西。',
+      voice: '她叫你名字的方式，你已经有点记不清楚了。但你知道那个声音你认得出来。',
+      smell_summer: '你说不清楚是什么气味。也许是草，也许是泥土，也许只是热。',
+      grandma_hands: '粗糙的，有很多皱纹。你小的时候觉得不好看。后来才明白那是什么。',
+    };
+
+    // 试图不展开就删除时的心理化提示
+    const UNEXPANDED_HINTS = {
+      mother: '这个文件夹好像……还没打开过。\n里面有什么？',
+      first_love: '等一下——\n你还没看里面有什么。',
+      university: '里面好像还有没看完的东西。',
+      childhood: '里面是不是还有什么？\n你确定要直接删掉吗？',
+      home: '这个文件夹里面好像还有一些东西……',
+      dinner: '里面好像有什么。',
+      seaside: '等等，里面好像有什么没看完的。',
+      confession: '这个……你真的不打开看看吗？',
+      dorm: '里面好像还有什么。',
+      club: '还有东西在里面。',
+      grandma: '……\n你真的不打开吗？',
+      summer: '里面好像有什么还没看的。',
+    };
+
+    const CORES = ['mother', 'first_love', 'university', 'childhood'];
+    const SUBS = ['home', 'dinner', 'rain', 'seaside', 'station', 'confession', 'dorm', 'graduation', 'club', 'playground', 'grandma', 'summer'];
+
+    // Identity Integrity 满值固定为 100（链完成率加权求和，上限即 100）
+    let maxIdentity = 100;
+    function computeMaxIdentity() { maxIdentity = 100; }
+
+    // ============================================================
+    //  数值计算
+    // ============================================================
+    // 展开某节点时，解锁其绑定物件的子节点（按需解锁，不影响初始容量）
+    function unlockItemNodes(id) {
+      const m = MEMORIES[id];
+      if (!m || m.deleted || m.corrupted) return;
+      if (m.item && ITEMS[m.item]) {
+        ITEMS[m.item].unlocks.forEach(uid => { if (MEMORIES[uid]) MEMORIES[uid].unlocked = true; });
+      }
+    }
+    function getCapacity() {
+      let c = 0;
+      for (let id in MEMORIES) {
+        const m = MEMORIES[id];
+        if (m.deleted) continue;
+        // 需要物件解锁的节点，只有已解锁才计入容量
+        if (m.itemLocked && !m.unlocked) continue;
+        c += m.cap;
+      }
+      return c;
+    }
+    function getIdentity() {
+      // Identity Integrity = 四条 Core Chain 完成率 × 权重之和
+      const chains = [
+        { nodes: ['mother', 'home', 'hallway', 'dinner', 'apron', 'rain'], weight: 30 },
+        { nodes: ['first_love', 'seaside', 'ferry', 'station', 'confession', 'draft_sms'], weight: 30 },
+        { nodes: ['childhood', 'playground', 'grandma', 'letter', 'summer', 'kite'], weight: 25 },
+        { nodes: ['university', 'dorm', 'library', 'graduation', 'club', 'activity_photo'], weight: 15 },
+      ];
+      let total = 0;
+      chains.forEach(chain => {
+        const retained = chain.nodes.filter(id => MEMORIES[id] && !MEMORIES[id].deleted).length;
+        total += chain.weight * (retained / chain.nodes.length);
+      });
+      return Math.round(total);
+    }
+
+    // ============================================================
+    //  拖拽
+    // ============================================================
+    let _dw = null, _ox = 0, _oy = 0;
+    document.addEventListener('mousemove', e => { if (_dw) { _dw.style.left = (e.clientX - _ox) + 'px'; _dw.style.top = (e.clientY - _oy) + 'px'; } });
+    document.addEventListener('mouseup', () => { _dw = null; });
+    function makeDraggable(el) { el.addEventListener('mousedown', e => { const target = el.closest('.dlg,.prop-popup,.ww'); _dw = target || el; _ox = e.clientX - _dw.offsetLeft; _oy = e.clientY - _dw.offsetTop; if (target) bringFront(target); }); }
+    function bringFront(el) {
+      // 弹窗和属性面板用 dlgZ，普通窗口用 winZ
+      if (el.classList.contains('dlg') || el.classList.contains('prop-popup')) {
+        el.style.zIndex = ++dlgZ;
+      } else {
+        el.style.zIndex = ++winZ;
+      }
+      document.querySelectorAll('.ww-bar,.prop-bar,.dlg-bar').forEach(b => b.classList.remove('focus'));
+      const bar = el.querySelector('.ww-bar,.prop-bar,.dlg-bar');
+      if (bar) bar.classList.add('focus');
+    }
+
+    // ============================================================
+    //  窗口创建
+    // ============================================================
+    function createWin(id, title, w, h, x, y, html, closable = true) {
+      let el = document.getElementById(id);
+      if (el) { el.style.display = ''; bringFront(el); return el; }
+      el = document.createElement('div');
+      el.className = 'ww'; el.id = id;
+      el.style.cssText = `left:${x}px;top:${y}px;width:${w}px;z-index:${++winZ}`;
+      const bar = document.createElement('div');
+      bar.className = 'ww-bar';
+      bar.innerHTML = `<span class="ww-ttl">${title}</span>`;
+      if (closable) { const x = document.createElement('div'); x.className = 'ww-btn'; x.textContent = '×'; x.onclick = () => el.style.display = 'none'; bar.appendChild(x); }
+      el.appendChild(bar);
+      const body = document.createElement('div'); body.innerHTML = html; el.appendChild(body);
+      const rh = document.createElement('div'); rh.className = 'ww-resize'; el.appendChild(rh);
+      document.getElementById('deskArea').appendChild(el);
+      makeDraggable(bar);
+      el.addEventListener('mousedown', () => bringFront(el));
+      return el;
+    }
+
+    // ============================================================
+    //  开机
+    // ============================================================
+    function boot() {
+      const steps = [
+        () => { document.getElementById('bl1').style.display = ''; document.getElementById('bpf').style.width = '20%'; },
+        () => { document.getElementById('bl2').style.display = ''; document.getElementById('bpf').style.width = '45%'; },
+        () => { document.getElementById('bl3').style.display = ''; document.getElementById('bpf').style.width = '70%'; },
+        () => { document.getElementById('bl4').style.display = ''; document.getElementById('bpf').style.width = '88%'; },
+        () => { document.getElementById('bl5').style.display = ''; document.getElementById('bpf').style.width = '100%'; },
+        () => {
+          switchScreen('s-desk');
+          // 加载完成后弹出异常提示
+          setTimeout(() => {
+            showDlg('错误', '检测到储存空间占用异常。\n\n当前使用率：' + getCapacity() + '%\n\n建议执行归档清理程序。', [{ l: '确认', fn: () => { } }]);
+          }, 200);
+        },
+      ];
+      steps.forEach((fn, i) => setTimeout(fn, (i + 1) * 680));
+    }
+    function switchScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+
+    // ============================================================
+    //  轮次过渡动画
+    // ============================================================
+    function showTransition(steps, onDone) {
+      const log = document.getElementById('transLog');
+      log.innerHTML = '';
+      document.getElementById('tpf').style.width = '0%';
+      switchScreen('s-trans');
+      let t = 0;
+      const total = steps.length;
+      steps.forEach((step, i) => {
+        t += step.wait || 800;
+        setTimeout(() => {
+          const s = document.createElement('span');
+          s.style.display = 'block';
+          if (step.color) s.style.color = step.color;
+          if (i === total - 1) {
+            s.innerHTML = step.text + '<span class="cur">_</span>';
+          } else {
+            s.textContent = step.text;
+          }
+          log.appendChild(s);
+          document.getElementById('tpf').style.width = Math.round(((i + 1) / total) * 100) + '%';
+        }, t);
+      });
+      t += 1200;
+      setTimeout(() => {
+        switchScreen('s-desk');
+        onDone();
+      }, t);
+    }
+
+    // 时钟
+    setInterval(() => { const n = new Date(); const t = n.getHours().toString().padStart(2, '0') + ':' + n.getMinutes().toString().padStart(2, '0'); document.getElementById('dt-time').textContent = t; document.getElementById('tbClock').textContent = t; }, 1000);
+
+    // ============================================================
+    //  桌面图标
+    // ============================================================
+    function openRecycle() {
+      const msg = trashFull
+        ? '废纸篓里有东西，但你已经不记得它们是什么了。'
+        : '废纸篓是空的。';
+      const old = document.getElementById('w-recycle'); if (old) old.parentNode.removeChild(old);
+      createWin('w-recycle', '废纸篓', 300, 160, 60, 60, `<div style="padding:24px;font-size:11px;color:#808080;text-align:center">${msg}</div>`);
+    }
+    function openSystem() {
+      const notDelRow = notDeleteRevealed
+        ? '<div class="fi" ondblclick="openNotDelete()"><span class="fi-ic px-txt"></span><span class="fi-nm" style="color:#808080">不要删除.txt</span></div>'
+        : '';
+      createWin('w-sys', '系统文件', 280, 200, 100, 80, `<div class="ftree">
+    <div class="fi"><span class="fi-ic px-txt"></span><span class="fi-nm">ARCHIVE_OS.txt</span></div>
+    <div class="fi"><span class="fi-ic px-txt"></span><span class="fi-nm">README.txt</span></div>
+    ${notDelRow}
+  </div>`);
+      // 打开系统文件夹后停止闪烁
+      const ico = document.getElementById('iconSystem');
+      if (ico) ico.classList.remove('icon-flash');
+    }
+    function startGame() { showRound(1); }
+
+    function toggleStartMenu() {
+      const m = document.getElementById('startMenu');
+      m.style.display = m.style.display === 'block' ? 'none' : 'block';
+      const btn = document.getElementById('btnStart');
+      if (btn) btn.classList.remove('icon-flash');
+    }
+    // 点击其他区域关闭开始菜单
+    document.addEventListener('click', function (e) {
+      const m = document.getElementById('startMenu');
+      if (!m || m.style.display !== 'block') return;
+      if (!e.target.closest('.start-menu') && !e.target.closest('.tb-start')) m.style.display = 'none';
+    });
+
+    function shutdownGame() {
+      document.getElementById('startMenu').style.display = 'none';
+      const title = endingReached ? '是否退出系统？' : '关机';
+      const msg = endingReached ? '' : '确定要关闭 ARCHIVE OS 吗？';
+      showDlg(title, msg, [
+        { l: '取消', primary: true, fn: () => { } },
+        {
+          l: endingReached ? '是' : '关机', fn: () => {
+            const text = endingReached ? 'Session Ended' : '现在可以安全地关闭计算机了。';
+            document.body.innerHTML = '<div style="position:absolute;top:0;left:0;width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center;color:#808080;font-family:Tahoma,sans-serif;font-size:13px">' + text + '</div>';
+          }
+        },
+      ]);
+    }
+
+    function restartGame() {
+      document.getElementById('startMenu').style.display = 'none';
+      showDlg('重新启动', '确定要重新启动吗？\n\n所有记忆将恢复初始状态。', [
+        { l: '取消', primary: true, fn: () => { } },
+        {
+          l: '重新启动', fn: () => {
+            // 重置所有游戏状态
+            round = 1; deletedCount = 0; notDeleteRevealed = false; trashFull = false; expandedFolders = {};
+            for (let id in MEMORIES) { MEMORIES[id].deleted = false; MEMORIES[id].corrupted = false; if (MEMORIES[id].unlocked !== undefined) MEMORIES[id].unlocked = false; }
+            for (let id in ITEMS) { if (ITEMS[id].deleted) ITEMS[id].deleted = false; }
+            // 还原系统图标闪烁
+            const si = document.getElementById('iconSystem');
+            if (si) si.classList.remove('icon-flash');
+            // 关闭所有窗口
+            document.querySelectorAll('.ww,.dlg,.prop-popup').forEach(el => el.remove());
+            document.getElementById('roundBadge').style.display = 'none';
+            // 重新播放开机动画
+            ['bl1', 'bl2', 'bl3', 'bl4', 'bl5'].forEach(id => { const e = document.getElementById(id); if (e) e.style.display = 'none'; });
+            document.getElementById('bpf').style.width = '0%';
+            switchScreen('s-boot');
+            boot();
+          }
+        },
+      ]);
+    }
+
+    // ============================================================
+    //  游戏主流程
+    // ============================================================
+    function showRound(r) {
+      round = r;
+      expandedFolders = {};
+      // 进入第二轮时计算自我完整度满值，作为进度条分母
+      if (r === 2) computeMaxIdentity();
+      document.getElementById('roundBadge').textContent = '第 ' + r + ' 次整理';
+      document.getElementById('roundBadge').style.display = '';
+      const old = document.getElementById('w-game');
+      if (old) old.parentNode.removeChild(old);
+      const titles = { 1: '第一次整理 · 记忆归档.exe', 2: '第二次整理 · 记忆归档.exe', 3: '第三次整理 · 记忆归档.exe' };
+      createWin('w-game', titles[r], 480, 0, 180, 40, buildRound(r), false);
+      if (r >= 2) showUnlockCards(r);
+    }
+
+    // ============================================================
+    //  第一轮
+    // ============================================================
+    function buildRound(r) {
+      if (r === 1) return buildR1();
+      if (r === 2) return buildR2();
+      if (r === 3) return buildR3();
+    }
+
+    function buildR1() {
+      const cap = getCapacity();
+      let rows = '';
+      CORES.forEach(id => {
+        const m = MEMORIES[id];
+        if (m.deleted) return;
+        rows += rowCore1(id, m);
+      });
+      return `
+  <div style="padding:8px 12px;border-bottom:1px solid #808080;font-size:10px;color:#808080;letter-spacing:.5px">
+    &gt;&nbsp; 检测到存储空间超出限制。请删除多余记忆。
+  </div>
+  <div class="ftree" id="r1-list">${rows || '<div style="padding:12px;color:#808080">所有记忆已删除。</div>'}</div>
+  ${barHTML(cap, null)}
+  <div style="padding:4px 12px 10px;font-size:9px;color:#808080;letter-spacing:1px">目标：尽可能低</div>
+  <div class="dlg-btns" style="margin-top:2px">
+    <button class="btn primary" onclick="advanceR1R2()">完成整理</button>
+  </div>`;
+    }
+
+    function rowCore1(id, m) {
+      const hasChildren = m.children && m.children.length > 0;
+      const isOpen = expandedFolders[id];
+      const icon = isOpen ? 'px-folder-open' : 'px-folder';
+      let html = `<div class="fi" id="fi-${id}" ondblclick="openProps('${id}',1)">
+    <span class="fi-ic ${icon}" id="fic-${id}"></span>
+    <span class="fi-nm">${m.name}</span>
+    <span class="fi-tag">[${m.cap}%]</span>
+    ${hasChildren ? `<span class="fi-expand" id="fex-${id}" onclick="event.stopPropagation();toggleFolder1('${id}')" style="cursor:pointer;padding:0 4px">${isOpen ? '▾' : '▸'}</span>` : '<span class="fi-expand"></span>'}
+    <span style="flex:1"></span>
+    <button class="btn" style="font-size:9px;padding:1px 8px" onclick="event.stopPropagation();tryDel1('${id}')">删除</button>
+  </div>`;
+      if (isOpen && hasChildren) {
+        m.children.forEach(cid => {
+          // round 1 — sub children not shown
+          html += `<div class="fi fi-indent" onclick="event.stopPropagation();r1Locked()">
+        <span class="fi-ic px-folder"></span>
+        <span class="fi-nm" style="color:#808080">${MEMORIES[cid].name}</span>
+        <span class="fi-tag">[${MEMORIES[cid].cap}%]</span>
+      </div>`;
+        });
+      }
+      return html;
+    }
+
+    function toggleFolder1(id) {
+      expandedFolders[id] = !expandedFolders[id];
+      refreshGame();
+    }
+
+    function r1Locked() {
+      playError();
+      showDlg('提示', '不可查看\n(提示：进入第二轮整理后解锁)', [{ l: '确认', fn: () => { } }]);
+      const win = document.getElementById('w-game');
+      if (win) shake(win);
+    }
+
+    function tryDel1(id) {
+      const m = MEMORIES[id];
+      const hasChildren = m.children && m.children.length > 0;
+      if (hasChildren && !expandedFolders[id]) {
+        const hint = UNEXPANDED_HINTS[id] || '里面好像还有什么。';
+        showDlg('等一下', hint + '\n\n要展开看看吗？', [
+          { l: '直接删除', fn: () => showDlg('确认删除', '你确定要删除「' + m.name + '」吗？', [{ l: '取消', primary: true, fn: () => { } }, { l: '删除', fn: () => doDelete(id, () => { refreshGame(); triggerAnomaly(id); }) }]) },
+          { l: '看看里面', primary: true, fn: () => { expandedFolders[id] = true; refreshGame(); } },
+        ]);
+        return;
+      }
+      showDlg('确认删除', '你确定要删除「' + m.name + '」吗？', [{ l: '取消', primary: true, fn: () => { } }, { l: '删除', fn: () => doDelete(id, () => { refreshGame(); triggerAnomaly(id); }) }]);
+    }
+
+    function advanceR1R2() {
+      const old = document.getElementById('w-game');
+      if (old) old.parentNode.removeChild(old);
+      showDlg('系统消息', '归档失败。\n\n自我完整度不足。\n\n建议进行第二次整理。', [{
+        l: '继续', fn: () => {
+          showTransition([
+            { text: '欢迎回来。', wait: 800 },
+            { text: '这是第 2 次整理。', wait: 1000 },
+            { text: '系统检测到：部分记忆结构存在关联。', wait: 1000 },
+            { text: '建议在本次整理中考虑记忆的完整性。', wait: 1000, color: '#000080' },
+          ], () => showRound(2));
+        }
+      }]);
+    }
+
+    // ============================================================
+    //  第二轮
+    // ============================================================
+    function buildR2() {
+      // 解锁物件子节点 — 在玩家展开文件夹时触发，此处不再批量解锁
+      const cap = getCapacity(); const iv = getIdentity();
+      let tree = '';
+      CORES.forEach(id => { tree += rowCore2(id); });
+      return `
+  <div style="padding:7px 12px;border-bottom:1px solid #808080;font-size:10px;color:#808080;letter-spacing:.5px">
+    &gt;&nbsp; 欢迎回来。这是第 2 次整理。系统检测到：记忆之间存在关联。
+  </div>
+  ${notDeleteRevealed ? `<div style="display:flex;border-bottom:1px solid #808080">
+    <div style="flex:1;padding:4px 10px;font-size:9px;color:#000;border-right:1px solid #808080;cursor:pointer" ondblclick="openNotDelete()">
+      <span style="color:#808080">≡</span>&nbsp; 不要删除.txt &nbsp;<span style="color:#808080;font-size:8px">（双击打开）</span>
+    </div>
+    <div style="padding:4px 10px;font-size:9px;color:#808080">关联网络已加载</div>
+  </div>`: ''}
+  <div class="ftree" id="r2-tree" style="max-height:310px;overflow-y:auto">${tree}</div>
+  ${barHTML(cap, iv)}
+  <div class="dlg-btns" style="margin-top:4px">
+    <button class="btn primary" onclick="advanceR2R3()">进入最终整理</button>
+  </div>`;
+    }
+
+    function rowCore2(id) {
+      const m = MEMORIES[id];
+      const isOpen = expandedFolders[id];
+      const corr = m.corrupted; const del = m.deleted;
+      const icon = del || corr ? 'px-corrupted' : (isOpen ? 'px-folder-open' : 'px-folder');
+      const cls = (del || corr) ? ' corrupted' : '';
+      const hasCh = m.children && m.children.length > 0;
+      let html = `<div class="fi${cls}" ondblclick="openProps('${id}',2)">
+    <span class="fi-ic ${icon}"></span>
+    <span class="fi-nm">${m.name}</span>
+    <span class="fi-tag">[${m.cap}%]${corr ? ' ⚠ 损坏' : ''}</span>
+    ${hasCh && !del ? `<span class="fi-expand" onclick="event.stopPropagation();toggleFolder2('${id}')" style="cursor:pointer;padding:0 4px">${isOpen ? '▾' : '▸'}</span>` : '<span class="fi-expand"></span>'}
+    <span style="flex:1"></span>
+    ${!del ? `<button class="btn" style="font-size:9px;padding:1px 8px" onclick="event.stopPropagation();tryDel2('${id}')">删除</button>` : '<span style="font-size:9px;color:#808080">已删除</span>'}
+  </div>`;
+      if (isOpen && !del) {
+        m.children.forEach(cid => { html += rowSub2(cid); });
+        // item
+        if (m.item && !del) {
+          const it = ITEMS[m.item];
+          const itDel = it.deleted;
+          html += `<div class="fi fi-indent${itDel ? ' corrupted' : ''}" ondblclick="event.stopPropagation();openItemProps('${m.item}')">
+        <span class="fi-ic px-thing"></span>
+        <span class="fi-nm">${it.name}</span>
+        <span class="fi-tag" style="color:#808080">[特殊物件]</span>
+        <span style="flex:1"></span>
+        ${itDel ? '<span style="font-size:9px;color:#808080">已删除</span>' : '<button class="btn" style="font-size:9px;padding:1px 8px" onclick="event.stopPropagation();delItem(\'' + m.item + '\')">删除</button>'}
+      </div>`;
+        }
+      }
+      return html;
+    }
+
+    function rowSub2(id) {
+      const m = MEMORIES[id];
+      const isOpen = expandedFolders[id];
+      const corr = m.corrupted; const del = m.deleted;
+      const icon = (del || corr) ? 'px-corrupted' : (isOpen && m.children && m.children.length ? 'px-folder-open' : 'px-folder');
+      const cls = (del || corr) ? ' corrupted' : '';
+      const hasCh = m.children && m.children.length > 0;
+      let html = `<div class="fi fi-indent${cls}" ondblclick="event.stopPropagation();openProps('${id}',2)">
+    <span class="fi-ic ${icon}"></span>
+    <span class="fi-nm">${m.name}</span>
+    <span class="fi-tag">[${m.cap}%]${corr ? ' ⚠' : ''}</span>
+    ${hasCh && !del && !corr ? `<span class="fi-expand" onclick="event.stopPropagation();toggleFolder2('${id}')" style="cursor:pointer;padding:0 4px">${isOpen ? '▾' : '▸'}</span>` : ''}
+    <span style="flex:1"></span>
+    ${del ? '<span style="font-size:9px;color:#808080">已删除</span>' : ((!corr) ? `<button class="btn" style="font-size:9px;padding:1px 8px" onclick="event.stopPropagation();tryDel2('${id}')">删除</button>` : '')}
+  </div>`;
+      if (isOpen && !del && !corr) {
+        m.children.forEach(lid => {
+          const lm = MEMORIES[lid];
+          if (!lm.unlocked) return;
+          const lDel = lm.deleted; const lCorr = lm.corrupted;
+          html += `<div class="fi fi-indent2${(lDel || lCorr) ? ' corrupted' : ''}" ondblclick="event.stopPropagation();openProps('${lid}',2)">
+        <span class="fi-ic px-thing"></span>
+        <span class="fi-nm">${lm.name}</span>
+        <span class="fi-tag">[${lm.cap}%]</span>
+        <span style="flex:1"></span>
+        ${lDel ? '<span style="font-size:9px;color:#808080">已删除</span>' : ((!lCorr) ? `<button class="btn" style="font-size:9px;padding:1px 8px" onclick="event.stopPropagation();tryDel2('${lid}')">删除</button>` : '')}
+      </div>`;
+        });
+        // 子节点自己绑定的物件
+        if (m.item && ITEMS[m.item]) {
+          const it = ITEMS[m.item];
+          const itDel = it.deleted;
+          html += `<div class="fi fi-indent2${itDel ? ' corrupted' : ''}" ondblclick="event.stopPropagation();openItemProps('${m.item}')">
+        <span class="fi-ic px-thing"></span>
+        <span class="fi-nm">${it.name}</span>
+        <span class="fi-tag" style="color:#808080">[特殊物件]</span>
+        <span style="flex:1"></span>
+        ${itDel ? '<span style="font-size:9px;color:#808080">已删除</span>' : '<button class="btn" style="font-size:9px;padding:1px 8px" onclick="event.stopPropagation();delItem(\'' + m.item + '\')">删除</button>'}
+      </div>`;
+        }
+      }
+      return html;
+    }
+
+    function toggleFolder2(id) {
+      expandedFolders[id] = !expandedFolders[id];
+      // 展开时解锁该节点绑定的物件子节点
+      if (expandedFolders[id]) unlockItemNodes(id);
+      refreshGame();
+    }
+
+    function tryDel2(id) {
+      const m = MEMORIES[id];
+      const hasChildren = m.children && m.children.length > 0;
+      if (hasChildren && !expandedFolders[id]) {
+        const hint = UNEXPANDED_HINTS[id] || '里面好像还有什么。';
+        showDlg('等一下', hint + '\n\n要展开看看吗？', [
+          { l: '直接删除', fn: () => showDlg('确认删除', '你确定要删除「' + m.name + '」吗？', [{ l: '取消', primary: true, fn: () => { } }, { l: '删除', fn: () => doDelete(id, () => { refreshGame(); triggerAnomaly(id); }) }]) },
+          { l: '看看里面', primary: true, fn: () => { expandedFolders[id] = true; unlockItemNodes(id); refreshGame(); } },
+        ]);
+        return;
+      }
+      showDlg('确认删除', '你确定要删除「' + m.name + '」吗？', [{ l: '取消', primary: true, fn: () => { } }, { l: '删除', fn: () => doDelete(id, () => { refreshGame(); triggerAnomaly(id); }) }]);
+    }
+
+    function advanceR2R3() {
+      const old = document.getElementById('w-game'); if (old) old.parentNode.removeChild(old);
+      showDlg('系统消息', '第 2 次整理已完成。\n\n系统记录已更新。\n准备进入最终整理阶段……', [{
+        l: '继续', fn: () => {
+          showTransition([
+            { text: '这是第 3 次整理。', wait: 800 },
+            { text: '……', wait: 1200 },
+            { text: '也是最后一次。', wait: 1500 },
+            { text: '本次整理将开放完整数据视图。', wait: 1500 },
+            { text: '所有记忆的价值将被量化显示。', wait: 1000 },
+            { text: '请做出最终决定。', wait: 1000, color: '#000080' },
+          ], () => showRound(3));
+        }
+      }]);
+    }
+
+    // ============================================================
+    //  第三轮
+    // ============================================================
+    function buildR3() {
+      const cap = getCapacity(); const iv = getIdentity();
+      let tree = '';
+      CORES.forEach(id => { tree += rowCore3(id); });
+      return `
+  <div style="padding:7px 12px;border-bottom:1px solid #808080;font-size:10px;color:#808080;letter-spacing:.5px">
+    &gt;&nbsp; 这是第 3 次整理。&nbsp;也是最后一次。
+  </div>
+  <div class="guide-banner">
+    提示：<span>双击任何文件，可以查看它对你意味着什么。</span>
+  </div>
+  <div class="ftree" id="r3-tree" style="max-height:280px;overflow-y:auto">${tree}</div>
+  ${barHTML(cap, iv)}
+  <div class="dlg-btns" style="margin-top:4px;justify-content:space-between">
+    <button class="btn" onclick="refuseArchive()">拒绝归档</button>
+    <button class="btn primary" onclick="finishArchive()">完成归档</button>
+  </div>`;
+    }
+
+    function rowCore3(id) {
+      const m = MEMORIES[id];
+      const isOpen = expandedFolders[id];
+      const del = m.deleted; const corr = m.corrupted;
+      const iv = corr ? Math.floor(m.iv * .5) : m.iv;
+      const icon = del || corr ? 'px-corrupted' : (isOpen ? 'px-folder-open' : 'px-folder');
+      const cls = (del || corr) ? 'corrupted' : '';
+      const hasCh = m.children && m.children.length > 0;
+      let html = `<div class="fi ${cls}" ondblclick="openProps('${id}',3)">
+    <span class="fi-ic ${icon}"></span>
+    <span class="fi-nm">${m.name}</span>
+    <span class="fi-tag">[${m.cap}% ·&nbsp;♦${iv}]${corr ? ' ⚠' : ''}</span>
+    ${hasCh && !del ? `<span class="fi-expand" onclick="event.stopPropagation();toggleFolder3('${id}')" style="cursor:pointer;padding:0 4px">${isOpen ? '▾' : '▸'}</span>` : ''}
+    <span style="flex:1"></span>
+    ${!del ? `<button class="btn" style="font-size:9px;padding:1px 8px" onclick="event.stopPropagation();tryDel3('${id}')">删除</button>` : '<span style="font-size:9px;color:#808080">已删除</span>'}
+  </div>`;
+      if (isOpen && !del) {
+        m.children.forEach(cid => { html += rowSub3(cid); });
+        if (m.item) { const it = ITEMS[m.item]; const itDel = it.deleted; html += `<div class="fi fi-indent${itDel ? ' corrupted' : ''}" ondblclick="event.stopPropagation();openItemProps('${m.item}')"><span class="fi-ic px-thing"></span><span class="fi-nm">${it.name}</span><span class="fi-tag">[特殊物件 · ♦0]</span><span style="flex:1"></span>${itDel ? '<span style="font-size:9px;color:#808080">已删除</span>' : '<button class="btn" style="font-size:9px;padding:1px 8px" onclick="event.stopPropagation();delItem(\'' + m.item + '\')">删除</button>'}</div>`; }
+      }
+      return html;
+    }
+
+    function rowSub3(id) {
+      const m = MEMORIES[id];
+      const isOpen = expandedFolders[id];
+      const del = m.deleted; const corr = m.corrupted;
+      const iv = corr ? Math.floor(m.iv * .5) : m.iv;
+      const icon = (del || corr) ? 'px-corrupted' : (isOpen && m.children && m.children.length ? 'px-folder-open' : 'px-folder');
+      const cls = (del || corr) ? 'corrupted' : '';
+      const hasCh = m.children && m.children.length > 0;
+      let html = `<div class="fi fi-indent ${cls}" ondblclick="event.stopPropagation();openProps('${id}',3)">
+    <span class="fi-ic ${icon}"></span>
+    <span class="fi-nm">${m.name}</span>
+    <span class="fi-tag">[${m.cap}% · ♦${iv}]${corr ? ' ⚠' : ''}</span>
+    ${hasCh && !del && !corr ? `<span class="fi-expand" onclick="event.stopPropagation();toggleFolder3('${id}')" style="cursor:pointer;padding:0 4px">${isOpen ? '▾' : '▸'}</span>` : ''}
+    <span style="flex:1"></span>
+    ${del ? '<span style="font-size:9px;color:#808080">已删除</span>' : ((!corr) ? `<button class="btn" style="font-size:9px;padding:1px 8px" onclick="event.stopPropagation();tryDel3('${id}')">删除</button>` : '')}
+  </div>`;
+      if (isOpen && !del && !corr) {
+        m.children.forEach(lid => {
+          const lm = MEMORIES[lid];
+          if (!lm.unlocked) return;
+          const lDel = lm.deleted; const lCorr = lm.corrupted;
+          const liv = lCorr ? Math.floor(lm.iv * .5) : lm.iv;
+          html += `<div class="fi fi-indent2${(lDel || lCorr) ? ' corrupted' : ''}" ondblclick="event.stopPropagation();openProps('${lid}',3)">
+        <span class="fi-ic px-thing"></span>
+        <span class="fi-nm">${lm.name}</span>
+        <span class="fi-tag">[${lm.cap}% · ♦${liv}]</span>
+        <span style="flex:1"></span>
+        ${lDel ? '<span style="font-size:9px;color:#808080">已删除</span>' : ((!lCorr) ? `<button class="btn" style="font-size:9px;padding:1px 8px" onclick="event.stopPropagation();tryDel3('${lid}')">删除</button>` : '')}
+      </div>`;
+        });
+      }
+      return html;
+    }
+
+    function toggleFolder3(id) {
+      expandedFolders[id] = !expandedFolders[id];
+      if (expandedFolders[id]) unlockItemNodes(id);
+      refreshGame();
+    }
+
+    function tryDel3(id) {
+      const m = MEMORIES[id];
+      const hasChildren = m.children && m.children.length > 0;
+      if (hasChildren && !expandedFolders[id]) {
+        const hint = UNEXPANDED_HINTS[id] || '里面好像还有什么。';
+        showDlg('等一下', hint + '\n\n要展开看看吗？', [
+          { l: '直接删除', fn: () => showDlg('确认删除', '你确定要删除「' + m.name + '」吗？', [{ l: '取消', primary: true, fn: () => { } }, { l: '删除', fn: () => doDelete(id, () => { refreshGame(); triggerAnomaly(id); }) }]) },
+          { l: '看看里面', primary: true, fn: () => { expandedFolders[id] = true; unlockItemNodes(id); refreshGame(); } },
+        ]);
+        return;
+      }
+      showDlg('确认删除', '你确定要删除「' + m.name + '」吗？', [{ l: '取消', primary: true, fn: () => { } }, { l: '删除', fn: () => doDelete(id, () => { refreshGame(); triggerAnomaly(id); }) }]);
+    }
+
+    // ============================================================
+    //  刷新游戏窗口 — 保留滚动位置
+    // ============================================================
+    function refreshGame() {
+      const win = document.getElementById('w-game');
+      if (!win) return;
+      // 记住当前所有滚动容器的位置
+      const scrollable = win.querySelectorAll('.ftree');
+      const savedScrolls = Array.from(scrollable).map(el => ({ id: el.id, top: el.scrollTop }));
+      win.children[1].innerHTML = buildRound(round);
+      // 还原滚动位置
+      savedScrolls.forEach(({ id, top }) => {
+        const el = id ? win.querySelector('#' + id) : win.querySelector('.ftree');
+        if (el) el.scrollTop = top;
+      });
+    }
+
+    // ============================================================
+    //  删除逻辑
+    // ============================================================
+    function doDelete(id, cb) {
+      playClick();
+      const m = MEMORIES[id];
+      m.deleted = true;
+      deletedCount++;
+      fillTrash();
+      // 第二轮首次删除 → 揭示"不要删除.txt"，闪烁系统图标
+      if (round >= 2 && !notDeleteRevealed) {
+        notDeleteRevealed = true;
+        const ico = document.getElementById('iconSystem');
+        if (ico) ico.classList.add('icon-flash');
+        // 如果系统文件夹已打开，关闭并重新打开以刷新内容
+        const sysWin = document.getElementById('w-sys');
+        if (sysWin) sysWin.parentNode.removeChild(sysWin);
+      }
+      // 立即损坏子节点
+      function corruptAll(node) {
+        if (!node.children) return;
+        node.children.forEach(cid => {
+          const cm = MEMORIES[cid];
+          if (cm) {
+            if (!cm.deleted) cm.corrupted = true;
+            corruptAll(cm);
+          }
+        });
+      }
+      corruptAll(m);
+      if (cb) cb();
+    }
+
+    // 删除特殊物件（不影响子节点）
+    function delItem(itemId) {
+      const it = ITEMS[itemId];
+      if (!it || it.deleted) return;
+      showDlg('确认删除', '你确定要删除「' + it.name + '」吗？', [
+        { l: '取消', primary: true, fn: () => { } },
+        {
+          l: '删除', fn: () => {
+            it.deleted = true;
+            fillTrash();
+            refreshGame();
+          }
+        },
+      ]);
+    }
+
+    // 废纸篓变满（仅更新弹窗文案状态，不改变图标）
+    function fillTrash() { trashFull = true; }
+
+    // ============================================================
+    //  抖动工具
+    // ============================================================
+    function shake(el) {
+      if (!el) return;
+      el.classList.remove('shaking');
+      void el.offsetWidth; // reflow
+      el.classList.add('shaking');
+      setTimeout(() => el.classList.remove('shaking'), 500);
+    }
+
+    // ============================================================
+    //  异常事件
+    // ============================================================
+    function triggerAnomaly(id) {
+      const ids = ['mother', 'childhood', 'first_love', 'grandma', 'university', 'home', 'station', 'graduation'];
+      if (ids.includes(id)) setTimeout(playError, 300);
+      if (id === 'mother') setTimeout(anomalyMother, 350);
+      if (id === 'childhood') setTimeout(anomalyChildhood, 350);
+      if (id === 'first_love') setTimeout(anomalyFirstLove, 350);
+      if (id === 'grandma') setTimeout(anomalyGrandma, 350);
+      if (id === 'university') setTimeout(anomalyUniversity, 350);
+      if (id === 'home') setTimeout(anomalyHome, 350);
+      if (id === 'station') setTimeout(anomalyStation, 350);
+      if (id === 'graduation') setTimeout(anomalyGraduation, 350);
+    }
+
+    function anomalyMother() {
+      // 多窗口连环报错
+      const errs = ['未找到相关记忆。', '该字段已被标记为空值。', '母亲不在家了。'];
+      let i = 0;
+      const area = document.getElementById('deskArea');
+      function spawnErr() {
+        if (i >= errs.length) return;
+        const d = document.createElement('div');
+        d.className = 'dlg';
+        d.style.cssText = `left:${140 + i * 30}px;top:${120 + i * 25}px;z-index:${++dlgZ}`;
+        const bar = document.createElement('div'); bar.className = 'dlg-bar';
+        bar.innerHTML = `错误 <span style="cursor:pointer" onclick="this.closest('.dlg').remove()">×</span>`;
+        const body = document.createElement('div'); body.className = 'dlg-body'; body.textContent = errs[i];
+        const btns = document.createElement('div'); btns.className = 'dlg-btns';
+        const btn = document.createElement('button'); btn.className = 'btn'; btn.textContent = '确认';
+        btn.onclick = () => { d.remove(); i++; setTimeout(spawnErr, 200); };
+        btns.appendChild(btn); d.appendChild(bar); d.appendChild(body); d.appendChild(btns);
+        area.appendChild(d); makeDraggable(bar); d.addEventListener('mousedown', () => bringFront(d));
+        shake(d);
+        i++;
+        setTimeout(spawnErr, 180);
+      }
+      // 先弹出输入框
+      showDlg('系统提示',
+        '正在处理记忆「母亲」……\n删除成功。\n\n请输入家庭住址以完成身份验证：',
+        [{ l: '提交', fn: () => spawnErr() }],
+        true);
+    }
+
+    function anomalyChildhood() {
+      const d = document.createElement('div');
+      d.className = 'dlg';
+      d.style.cssText = `left:200px;top:150px;z-index:${++dlgZ};min-width:320px`;
+      const bar = document.createElement('div'); bar.className = 'dlg-bar'; bar.style.cursor = 'move';
+      bar.innerHTML = '导航系统 <span onclick="this.closest(\'.dlg\').remove()" style="cursor:pointer">×</span>';
+      const body = document.createElement('div'); body.className = 'dlg-body';
+      // 像素街区地图
+      function blk() {
+        return '<div style="flex:1;min-width:0;height:24px;border:1px solid #808080;display:flex;align-items:center;justify-content:center;font-size:8px;color:#000;letter-spacing:1px;background:#808080;background-image:linear-gradient(#707070 1px,transparent 1px),linear-gradient(90deg,#707070 1px,transparent 1px);background-size:5px 5px">【街区】</div>';
+      }
+      function row() { return '<div style="display:flex;gap:8px">' + blk() + blk() + blk() + '</div>'; }
+      function road() { return '<div style="text-align:center;color:#000;font-size:8px;letter-spacing:3px;padding:2px 0">道路</div>'; }
+      body.innerHTML = '删除成功。<br><br>请在地图上找到家的位置：<br><br>'
+        + '<div id="childhood-map" style="background:#fff;border:2px inset #808080;padding:6px">'
+        + row() + road() + row() + road() + row() + road() + row()
+        + '</div>';
+      const btns = document.createElement('div'); btns.className = 'dlg-btns';
+      const btn = document.createElement('button'); btn.className = 'btn'; btn.textContent = '关闭';
+      btn.onclick = () => d.remove(); btns.appendChild(btn);
+      d.appendChild(bar); d.appendChild(body); d.appendChild(btns);
+      document.getElementById('deskArea').appendChild(d);
+      makeDraggable(bar); d.addEventListener('mousedown', () => bringFront(d));
+      // 像素风定位大头针光标
+      const pinSvg = "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='24'><rect x='5' y='0' width='6' height='2' fill='#aaa'/><rect x='3' y='2' width='10' height='2' fill='#aaa'/><rect x='3' y='4' width='3' height='2' fill='#aaa'/><rect x='10' y='4' width='3' height='2' fill='#aaa'/><rect x='5' y='4' width='6' height='2' fill='#555'/><rect x='3' y='6' width='10' height='2' fill='#aaa'/><rect x='5' y='8' width='6' height='2' fill='#aaa'/><rect x='6' y='10' width='4' height='2' fill='#aaa'/><rect x='7' y='12' width='2' height='4' fill='#aaa'/><rect x='7' y='16' width='2' height='2' fill='#666'/></svg>";
+      const mapEl = document.getElementById('childhood-map');
+      mapEl.style.cursor = 'url("data:image/svg+xml,' + encodeURIComponent(pinSvg) + '") 8 18, crosshair';
+      // 每次点击：窗口剧烈抖动 + 弹出错误窗口
+      mapEl.addEventListener('click', function (e) {
+        e.stopPropagation();
+        shake(d);
+        showDlg('错误', '路线数据异常。\n\n无法在记忆中找到"家"的位置。', [{ l: '确认', fn: () => { } }]);
+      });
+    }
+
+    function anomalyFirstLove() {
+      // 加载条 + 联系人确认，选择后抖动
+      const dlg = showDlg('系统消息',
+        '正在检索联系人……\n\n联系人「[名字已加密]」已不存在。\n\n您是否认识此人？',
+        [
+          {
+            l: '是', fn: () => {
+              const d2 = showDlg('无法确认', '无法调取相关记忆。\n您真的记得您的初恋吗？', [{ l: '确认', fn: () => { } }]);
+              setTimeout(() => shake(d2), 50);
+            }
+          },
+          {
+            l: '否', fn: () => {
+              const d2 = showDlg('已记录', '已记录。\n您不记得您的初恋了。', [{ l: '确认', fn: () => { } }]);
+              setTimeout(() => shake(d2), 50);
+            }
+          },
+        ]);
+    }
+
+    function anomalyGrandma() {
+      showDlg('……', '……\n\n……\n\n……', [{ l: '关闭', fn: () => { } }]);
+    }
+
+    function anomalyUniversity() {
+      const d1 = showDlg('系统提示',
+        '正在处理记忆「大学」……\n删除成功。\n\n请填写您的毕业院校。',
+        [{
+          l: '提交', fn: () => {
+            showDlg('错误', '学历记录不存在。\n无法验证该填写项。\n建议：留空。', [{
+              l: '确认', fn: () => {
+                setTimeout(() => {
+                  showDlg('……', '……\n\n顺便，\n\n你的专业是什么？',
+                    [{ l: '提交', fn: () => showDlg('……', '记录已删除。', [{ l: '确认', fn: () => { } }]) }], true);
+                }, 5000);
+              }
+            }]);
+          }
+        }],
+        true);
+    }
+
+    function anomalyHome() {
+      const d = document.createElement('div');
+      d.className = 'dlg';
+      d.style.cssText = `left:${155 + (_dlgOffset + 22) % 80}px;top:${130 + (_dlgOffset + 22) % 80}px;z-index:${++dlgZ}`;
+      const bar = document.createElement('div'); bar.className = 'dlg-bar';
+      bar.innerHTML = '定位请求 <span style="cursor:pointer;font-weight:normal" onclick="this.closest(\'.dlg\').remove()">×</span>';
+      const body = document.createElement('div'); body.className = 'dlg-body';
+      body.innerHTML = '您当前的位置是：<br><br><span id="ah-line1"></span><br><span id="ah-line2"></span><br><span id="ah-line3"></span>';
+      const btns = document.createElement('div'); btns.className = 'dlg-btns';
+      const btn = document.createElement('button'); btn.className = 'btn'; btn.textContent = '等待……'; btn.disabled = true;
+      btns.appendChild(btn);
+      d.appendChild(bar); d.appendChild(body); d.appendChild(btns);
+      document.getElementById('deskArea').appendChild(d);
+      makeDraggable(bar); d.addEventListener('mousedown', () => bringFront(d));
+      // 逐字打字效果
+      function typeText(elId, text, delay, cb) {
+        const el = document.getElementById(elId);
+        if (!el) return;
+        let i = 0;
+        const iv = setInterval(() => {
+          if (i < text.length) { el.textContent += text[i]; i++; }
+          else { clearInterval(iv); if (cb) cb(); }
+        }, 80);
+        setTimeout(() => { if (i === 0 && el) el.textContent = ''; }, delay);
+      }
+      setTimeout(() => typeText('ah-line1', '[ 正在获取…… ]', 0, () => {
+        setTimeout(() => typeText('ah-line2', '[ 正在获取…… ]', 0, () => {
+          setTimeout(() => typeText('ah-line3', '[ 无法定位 ]', 0), 600);
+        }), 600);
+      }), 400);
+      // 3秒后切换为结果
+      setTimeout(() => {
+        if (!d.isConnected) return;
+        body.innerHTML = '无法找到参考锚点。<br><br>位置已标记为：<span style="color:#ff0000;font-weight:bold">未知。</span>';
+        btn.textContent = '确认'; btn.disabled = false; btn.onclick = () => d.remove();
+      }, 6000);
+    }
+
+    function anomalyStation() {
+      const d = document.createElement('div');
+      d.className = 'dlg';
+      d.style.cssText = `left:${155 + (_dlgOffset + 22) % 80}px;top:${130 + (_dlgOffset + 22) % 80}px;z-index:${++dlgZ}`;
+      const bar = document.createElement('div'); bar.className = 'dlg-bar';
+      bar.innerHTML = '出行记录 <span style="cursor:pointer;font-weight:normal" onclick="this.closest(\'.dlg\').remove()">×</span>';
+      const body = document.createElement('div'); body.className = 'dlg-body';
+      function coverItem(label) {
+        return '<div style="margin-bottom:6px">' + label + '<span style="position:relative;display:inline-block;margin-left:4px">'
+          + '<span style="color:#808080;font-size:11px">[数据缺失]</span>'
+          + '<span style="position:absolute;left:0;top:0;width:100%;height:100%;background:#a0a0a0;border-radius:3px;transition:opacity .3s;cursor:default" '
+          + 'onmouseenter="this.style.opacity=0" onmouseleave="this.style.opacity=1">&nbsp;</span>'
+          + '</span></div>';
+      }
+      body.innerHTML = '正在处理记忆「车站」……<br>删除成功。<br><br>'
+        + coverItem('最近一次离开记录：')
+        + coverItem('目的地：')
+        + coverItem('同行人：');
+      const btns = document.createElement('div'); btns.className = 'dlg-btns';
+      const btn = document.createElement('button'); btn.className = 'btn'; btn.textContent = '关闭';
+      btn.onclick = () => {
+        d.remove();
+        setTimeout(() => {
+          // 第二个弹窗 — 报错风格
+          const d2 = document.createElement('div');
+          d2.className = 'dlg';
+          d2.style.cssText = `left:${170 + (_dlgOffset + 44) % 80}px;top:${150 + (_dlgOffset + 44) % 80}px;z-index:${++dlgZ}`;
+          const bar2 = document.createElement('div'); bar2.className = 'dlg-bar';
+          bar2.innerHTML = '错误 <span style="cursor:pointer;font-weight:normal" onclick="this.closest(\'.dlg\').remove()">×</span>';
+          const body2 = document.createElement('div'); body2.className = 'dlg-body';
+          body2.innerHTML = '有些离别，<br><br>没有被记录下来。';
+          const btns2 = document.createElement('div'); btns2.className = 'dlg-btns';
+          const btn2 = document.createElement('button'); btn2.className = 'btn'; btn2.textContent = '确认';
+          btn2.onclick = () => d2.remove();
+          btns2.appendChild(btn2);
+          d2.appendChild(bar2); d2.appendChild(body2); d2.appendChild(btns2);
+          document.getElementById('deskArea').appendChild(d2);
+          makeDraggable(bar2); d2.addEventListener('mousedown', () => bringFront(d2));
+          shake(d2);
+        }, 600);
+      };
+      btns.appendChild(btn);
+      d.appendChild(bar); d.appendChild(body); d.appendChild(btns);
+      document.getElementById('deskArea').appendChild(d);
+      makeDraggable(bar); d.addEventListener('mousedown', () => bringFront(d));
+    }
+
+    function anomalyGraduation() {
+      // 第一个弹窗：相册索引更新 → 文字切换 → 删除关联图像
+      const d1 = showDlg('相册索引', '相册索引更新中……', [{ l: '等待', fn: () => { } }]);
+      setTimeout(() => {
+        if (!d1 || !d1.isConnected) return;
+        const body1 = d1.querySelector('.dlg-body');
+        if (body1) body1.textContent = '删除关联图像 1/1……';
+        const btn1 = d1.querySelector('.btn');
+        if (btn1) {
+          btn1.textContent = '确认'; btn1.onclick = () => {
+            d1.remove();
+            // 第二个弹窗：扫描备份 → 文字切换 → 未检测到备份
+            setTimeout(() => {
+              const d2 = showDlg('备份扫描', '正在扫描是否有备份……', [{ l: '等待', fn: () => { } }]);
+              setTimeout(() => {
+                if (!d2 || !d2.isConnected) return;
+                const body2 = d2.querySelector('.dlg-body');
+                if (body2) body2.textContent = '未检测到备份。';
+                const btn2 = d2.querySelector('.btn');
+                if (btn2) {
+                  btn2.textContent = '确认'; btn2.onclick = () => {
+                    d2.remove();
+                    // 第三个弹窗：报错风格
+                    setTimeout(() => {
+                      const d3 = showDlg('错误', '该图像已永久移除。', [{ l: '确认', fn: () => { } }]);
+                      if (d3) shake(d3);
+                    }, 400);
+                  };
+                }
+              }, 2000);
+            }, 400);
+          };
+        }
+      }, 2000);
+    }
+
+    // ============================================================
+    //  属性面板
+    // ============================================================
+    function openProps(id, r) {
+      const m = MEMORIES[id];
+      const iv = m.corrupted ? Math.floor(m.iv * .5) : m.iv;
+      const quote = QUOTES[id] || '';
+      const d = document.createElement('div');
+      d.className = 'prop-popup';
+      d.style.cssText = `left:${200 + Math.random() * 60}px;top:${120 + Math.random() * 60}px;z-index:${++propZ}`;
+      const advStats = r >= 3 ? `<div class="prop-field"><span class="prop-label">自我权重</span><span class="prop-val">${iv}${m.corrupted ? ' (原' + m.iv + '，损坏×0.5)' : ''}</span></div>` : '';
+      const corrInfo = m.corrupted ? `<div class="prop-field"><span class="prop-label" style="color:#808080">状态</span><span class="prop-val" style="color:#ff0000">⚠ 已损坏</span></div>` : '';
+      d.innerHTML = `
+  <div class="prop-bar">${m.name} — 属性 <span style="cursor:pointer;font-weight:normal" onclick="this.closest('.prop-popup').remove()">×</span></div>
+  <div class="prop-body">
+    <div class="prop-field"><span class="prop-label">类型</span><span class="prop-val">${m.children && m.children.length ? '文件夹（关联记忆）' : '记忆碎片'}</span></div>
+    <div class="prop-field"><span class="prop-label">存储空间</span><span class="prop-val">${m.cap}%</span></div>
+    ${advStats}${corrInfo}
+    ${quote ? `<div class="prop-quote">${quote}</div>` : ''}
+  </div>`;
+      document.getElementById('deskArea').appendChild(d);
+      makeDraggable(d.querySelector('.prop-bar'));
+      d.addEventListener('mousedown', () => { d.style.zIndex = ++propZ; });
+    }
+
+    function openItemProps(itemId) {
+      const it = ITEMS[itemId];
+      const d = document.createElement('div');
+      d.className = 'prop-popup';
+      d.style.cssText = `left:230px;top:150px;z-index:${++propZ}`;
+      d.innerHTML = `
+  <div class="prop-bar">${it.name} — 属性 <span style="cursor:pointer;font-weight:normal" onclick="this.closest('.prop-popup').remove()">×</span></div>
+  <div class="prop-body">
+    <div class="prop-field"><span class="prop-label">文件类型</span><span class="prop-val">特殊物件</span></div>
+    <div class="prop-field"><span class="prop-label">存储空间</span><span class="prop-val">0%</span></div>
+    <div class="prop-quote">${it.desc}</div>
+  </div>`;
+      document.getElementById('deskArea').appendChild(d);
+      makeDraggable(d.querySelector('.prop-bar'));
+      d.addEventListener('mousedown', () => { d.style.zIndex = ++propZ; });
+    }
+
+    // ============================================================
+    //  状态栏 HTML
+    // ============================================================
+    function barHTML(cap, iv) {
+      const capW = Math.min(cap, 100);
+      // 进度条以 maxIdentity 为满值；maxIdentity=0 时兜底用100
+      const denom = maxIdentity > 0 ? maxIdentity : 100;
+      const ivW = iv != null ? Math.min(Math.round(iv / denom * 100), 100) : 0;
+      return `
+  <div class="cap-row">
+    <span class="cap-label">存储空间</span>
+    <div class="cap-bar-wrap"><div class="cap-bar-fill${cap > 60 ? ' danger' : ''}" id="cap-fill" style="width:${capW}%"></div></div>
+    <span class="cap-num" id="cap-num">${cap}%</span>
+  </div>
+  ${iv != null ? `<div class="id-row">
+    <span class="cap-label">自我完整度</span>
+    <div class="cap-bar-wrap"><div class="id-bar-fill" id="id-fill" style="width:${ivW}%"></div></div>
+    <span class="cap-num" id="id-num">${iv}</span>
+  </div>`: ''}`;
+    }
+
+    // ============================================================
+    //  结局
+    // ============================================================
+    function finishArchive() {
+      const cap = getCapacity(); const iv = getIdentity();
+      const allCoresDeleted = CORES.every(id => MEMORIES[id].deleted);
+      if (allCoresDeleted) { endingD(); return; }
+      if (cap <= 35 && iv >= 60) endingA();
+      else if (cap <= 35 && iv < 60) endingB();
+      else showDlg('归档提示', '当前容量仍然较高。\n\n请继续删减记忆后再完成归档。', [{ l: '继续整理', fn: () => { } }]);
+    }
+    function refuseArchive() {
+      showDlg('是否继续整理？', '', [
+        { l: '是', primary: true, fn: () => { } },
+        { l: '否', fn: () => endingC() },
+      ]);
+    }
+
+    // ============================================================
+    //  结局辅助函数
+    // ============================================================
+    function showEndingNotif(name) {
+      const old = document.querySelector('.ending-notif');
+      if (old) old.remove();
+      const el = document.createElement('div');
+      el.className = 'ending-notif';
+      el.innerHTML = '<div class="ending-notif-bar">结局<span style="font-size:8px">×</span></div>'
+        + '<div class="ending-notif-body">'
+        + '<div class="ending-notif-title">结局已解锁</div>'
+        + '<div class="ending-notif-name">' + name + '</div>'
+        + '</div>';
+      el.addEventListener('click', () => el.remove());
+      document.body.appendChild(el);
+      el.offsetHeight; // force reflow to ensure animation fires
+      // 开始键闪烁提示关机
+      const btn = document.getElementById('btnStart');
+      if (btn) btn.classList.add('icon-flash');
+    }
+    // ============================================================
+    function clearDesktop() {
+      const area = document.getElementById('deskArea');
+      area.querySelectorAll('.d-icon,.ww,.dlg,.prop-popup').forEach(el => el.remove());
+      const ov = document.getElementById('deskOverlay');
+      if (ov) ov.remove();
+    }
+
+    function getOverlay() {
+      let ov = document.getElementById('deskOverlay');
+      if (!ov) {
+        ov = document.createElement('div');
+        ov.id = 'deskOverlay';
+        ov.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:calc(100% - 28px);display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;z-index:5';
+        document.getElementById('deskArea').appendChild(ov);
+      }
+      return ov;
+    }
+
+    function showOverlayLines(lines, cb) {
+      const ov = getOverlay();
+      ov.innerHTML = '';
+      let t = 0;
+      lines.forEach(line => {
+        t += line.delay || 1500;
+        const d = t;
+        setTimeout(() => {
+          const div = document.createElement('div');
+          div.style.cssText = 'font-size:13px;color:#000;line-height:2.4;text-align:center;' + (line.style || '');
+          div.textContent = line.text;
+          ov.appendChild(div);
+        }, d);
+      });
+      if (cb) { t += 2000; setTimeout(cb, t); }
+      return t;
+    }
+
+    function blackScreen(ms, cb) {
+      const bs = document.createElement('div');
+      bs.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:99998';
+      document.body.appendChild(bs);
+      setTimeout(() => { bs.remove(); if (cb) cb(); }, ms);
+    }
+
+    function desktopFlash(cb) {
+      const f = document.createElement('div');
+      f.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:99998;transition:opacity .3s';
+      document.body.appendChild(f);
+      setTimeout(() => f.style.opacity = '0', 50);
+      setTimeout(() => { f.remove(); if (cb) cb(); }, 400);
+    }
+
+    function addMemoryIcon(id) {
+      const m = MEMORIES[id];
+      if (!m || m.deleted) return;
+      const div = document.createElement('div');
+      div.className = 'd-icon';
+      div.addEventListener('dblclick', () => openMemoryFolder(id));
+      div.innerHTML = '<span class="ic" style="font-size:32px">📁</span><span>' + m.name + '</span>';
+      document.getElementById('deskArea').appendChild(div);
+    }
+
+    function openMemoryFolder(id) {
+      const m = MEMORIES[id];
+      if (!m) return;
+      let content = '<div class="txt-file"><span class="em">' + m.name + '</span>\n\n';
+      const q = QUOTES[id]; if (q) content += q + '\n\n';
+      if (m.children) m.children.forEach(cid => {
+        const cm = MEMORIES[cid]; if (!cm || cm.deleted) return;
+        content += '\n<span class="em">' + cm.name + '</span>\n';
+        const cq = QUOTES[cid]; if (cq) content += cq + '\n';
+        if (cm.children) cm.children.forEach(lid => {
+          const lm = MEMORIES[lid]; if (!lm || lm.deleted) return;
+          content += '\n<span class="em">' + lm.name + '</span>\n';
+          const lq = QUOTES[lid]; if (lq) content += lq + '\n';
+        });
+      });
+      content += '</div>';
+      createWin('w-mem-' + id, m.name, 320, 0, 100 + Math.random() * 80, 60 + Math.random() * 40, content);
+    }
+
+    // ============================================================
+    //  结局 A：你选择了记住
+    // ============================================================
+    function endingA() {
+      endingReached = true;
+      showEndingNotif('你选择了记住');
+      const old = document.getElementById('w-game'); if (old) old.parentNode.removeChild(old);
+      document.querySelectorAll('.ww,.dlg,.prop-popup').forEach(el => el.remove());
+      // 第一阶段：系统计算文字逐行出现
+      const ov = getOverlay();
+      ov.innerHTML = '';
+      const calcLines = [{ text: '正在归档...', delay: 1200 }, { text: '请稍候...', delay: 1500 }];
+      const t1 = showOverlayLines(calcLines, () => {
+        // 第二阶段：黑屏3秒
+        blackScreen(3000, () => {
+          // 第三阶段：桌面重现，只剩存活的记忆文件夹
+          clearDesktop();
+          CORES.forEach(id => addMemoryIcon(id));
+          // 也添加存活的一级子节点
+          CORES.forEach(coreId => {
+            const m = MEMORIES[coreId];
+            if (m && !m.deleted && m.children) m.children.forEach(cid => {
+              // 子节点不单独放桌面，在文件夹内打开
+            });
+          });
+          // 第四阶段：桌面中央慢慢出现文字
+          setTimeout(() => {
+            showOverlayLines([
+              { text: '归档完成', delay: 2000, style: 'font-size:15px;font-weight:bold;color:#000080;margin-bottom:20px' },
+            ], () => {
+              // 第五阶段：诗句逐行出现
+              const poem = [
+                { text: '……', delay: 2000, style: 'color:#808080' },
+                { text: '你知道吗。', delay: 2500 },
+                { text: '', delay: 500 },
+                { text: '大多数人都会先遗忘别人，', delay: 2500 },
+                { text: '然后遗忘自己。', delay: 2000 },
+                { text: '', delay: 1500 },
+                { text: '而你选择了记住。', delay: 2500, style: 'color:#000080' },
+              ];
+              let pt = 0;
+              poem.forEach(line => {
+                pt += line.delay || 1500;
+                if (!line.text) return;
+                const d = pt;
+                setTimeout(() => {
+                  const div = document.createElement('div');
+                  div.style.cssText = 'font-size:13px;color:#000;line-height:2.4;text-align:center;' + (line.style || '');
+                  div.textContent = line.text;
+                  getOverlay().appendChild(div);
+                }, d);
+              });
+            });
+          }, 1500);
+        });
+      });
+    }
+
+    // ============================================================
+    //  结局 B：数字生命
+    // ============================================================
+    function endingB() {
+      endingReached = true;
+      showEndingNotif('数字生命');
+      const old = document.getElementById('w-game'); if (old) old.parentNode.removeChild(old);
+      document.querySelectorAll('.ww,.dlg,.prop-popup').forEach(el => el.remove());
+      const ov = getOverlay(); ov.innerHTML = '';
+      const lines = [
+        { text: '您的自我不足以被维持', delay: 1500 },
+        { text: '正在调用默认人格模板……', delay: 1500 },
+        { text: '加载中……', delay: 1500 },
+        { text: '加载中……', delay: 1500 },
+      ];
+      showOverlayLines(lines, () => {
+        setTimeout(() => {
+          ov.innerHTML = '<div style="font-size:13px;color:#000;text-align:center">计算完成</div>';
+          setTimeout(() => {
+            ov.innerHTML = '';
+            clearDesktop();
+            desktopFlash(() => {
+              // 桌面只剩 Citizen Template.cfg
+              const area = document.getElementById('deskArea');
+              const icon = document.createElement('div');
+              icon.className = 'd-icon';
+              icon.addEventListener('dblclick', () => openCitizenTemplate());
+              icon.innerHTML = '<span class="ic" style="font-size:32px">⚙️</span><span>Citizen Template.cfg</span>';
+              area.appendChild(icon);
+            });
+          }, 2000);
+        }, 1000);
+      });
+    }
+
+    function openCitizenTemplate() {
+      const el = document.getElementById('w-citizen');
+      if (el) { el.style.display = ''; bringFront(el); return; }
+      createWin('w-citizen', 'Citizen Template.cfg', 380, 0, 120, 50, buildCitizenP1(), false);
+      setTimeout(setupCitizenInputs, 100);
+    }
+
+    function buildCitizenP1() {
+      return '<div style="padding:16px 20px;font-size:12px;line-height:2.2;color:#000">'
+        + '<div>欢迎，数字公民。</div>'
+        + '<div style="margin-top:8px">您的编号为：<span style="color:#808080">[REDACTED]</span></div>'
+        + '<div style="margin-top:12px">请问，您叫什么名字？</div>'
+        + '<input class="dlg-input citizen-input" data-field="名字" style="margin-bottom:10px">'
+        + '<div>人格：</div>'
+        + '<input class="dlg-input citizen-input" data-field="人格" style="margin-bottom:6px">'
+        + '<div>记忆：</div>'
+        + '<input class="dlg-input citizen-input" data-field="记忆">'
+        + '<div style="text-align:right;margin-top:14px">'
+        + '<button class="btn" onclick="citizenPage2()">下一页 →</button>'
+        + '</div></div>';
+    }
+
+    function citizenPage2() {
+      const win = document.getElementById('w-citizen');
+      if (!win) return;
+      win.children[1].innerHTML = '<div style="padding:16px 20px;font-size:12px;line-height:2.2;color:#000">'
+        + '<div>兴趣：</div>'
+        + '<input class="dlg-input citizen-input" data-field="兴趣" style="margin-bottom:6px">'
+        + '<div>价值观：</div>'
+        + '<input class="dlg-input citizen-input" data-field="价值观" style="margin-bottom:6px">'
+        + '<div>情感模块：</div>'
+        + '<input class="dlg-input citizen-input" data-field="情感模块">'
+        + '</div>';
+      setTimeout(setupCitizenInputs, 100);
+      // 几秒后显示最终文字
+      setTimeout(() => {
+        showOverlayLines([{ text: '您已经被归档', delay: 0, style: 'font-size:15px;font-weight:bold;color:#000080' }]);
+      }, 8000);
+    }
+
+    function setupCitizenInputs() {
+      document.querySelectorAll('.citizen-input').forEach(inp => {
+        if (inp._bound) return; inp._bound = true;
+        inp.addEventListener('keydown', function (e) {
+          e.preventDefault();
+          playError();
+          showDlg('[REDACTED]', '[REDACTED]，您没有' + this.dataset.field + '。', [{ l: '确认', fn: () => { } }]);
+        });
+      });
+    }
+
+    // ============================================================
+    //  结局 C：拒绝归档
+    // ============================================================
+    function endingC() {
+      endingReached = true;
+      showEndingNotif('拒绝归档');
+      const old = document.getElementById('w-game'); if (old) old.parentNode.removeChild(old);
+      document.querySelectorAll('.ww,.dlg,.prop-popup').forEach(el => el.remove());
+      // Archive.exe 改名为 .bak
+      const lbl = document.getElementById('archiveLabel');
+      if (lbl) lbl.textContent = '记忆归档.exe.bak';
+      const ico = document.getElementById('iconArchive');
+      if (ico) { ico.style.opacity = '0.5'; ico.ondblclick = null; }
+      // 弹出通知
+      setTimeout(() => {
+        showDlg('结局', '系统通知\n\n归档已取消', [{
+          l: '确认', fn: () => {
+            // 过几秒出现诗句
+            setTimeout(() => {
+              showOverlayLines([
+                { text: '有些东西', delay: 2000 },
+                { text: '无法被压缩', delay: 2000, style: 'color:#000080' },
+              ]);
+            }, 1500);
+          }
+        }]);
+      }, 1500);
+    }
+
+    // ============================================================
+    //  结局 D：空档案
+    // ============================================================
+    function endingD() {
+      endingReached = true;
+      showEndingNotif('空档案');
+      const old = document.getElementById('w-game'); if (old) old.parentNode.removeChild(old);
+      document.querySelectorAll('.ww,.dlg,.prop-popup').forEach(el => el.remove());
+      const ov = getOverlay(); ov.innerHTML = '';
+      const lines = [
+        { text: '您的自我检测为空', delay: 1500 },
+        { text: '正在调用默认人格模板……', delay: 1500 },
+        { text: '加载中……', delay: 1500 },
+        { text: '加载中……', delay: 1500 },
+      ];
+      showOverlayLines(lines, () => {
+        setTimeout(() => {
+          ov.innerHTML = '<div style="font-size:13px;color:#000;text-align:center">计算失败</div>';
+          setTimeout(() => {
+            ov.innerHTML = '';
+            clearDesktop();
+            desktopFlash();
+          }, 2000);
+        }, 1000);
+      });
+    }
+
+    // ============================================================
+    //  对话框 — 使用回调注册表，避免字符串化 closure 丢失上下文
+    // ============================================================
+    const _cbs = {};   // { 'cbKey': fn }
+    let _dlgOffset = 0;
+
+    function _reg(fn) { const k = 'cb' + Date.now() + '_' + Math.random().toString(36).slice(2); _cbs[k] = fn; return k; }
+    function _call(k, dlgEl) { if (_cbs[k]) { _cbs[k](); delete _cbs[k]; } if (dlgEl) dlgEl.remove(); }
+
+    function showDlg(title, msg, btns, hasInput) {
+      _dlgOffset = (_dlgOffset + 22) % 80;
+      const d = document.createElement('div');
+      d.className = 'dlg';
+      d.style.cssText = `left:${155 + _dlgOffset}px;top:${130 + _dlgOffset}px;z-index:${++dlgZ}`;
+      // 关闭按钮
+      const bar = document.createElement('div');
+      bar.className = 'dlg-bar';
+      bar.innerHTML = `${title} <span style="cursor:pointer;font-weight:normal">×</span>`;
+      bar.querySelector('span').onclick = () => d.remove();
+      d.appendChild(bar);
+      // 正文
+      const body = document.createElement('div');
+      body.className = 'dlg-body';
+      body.style.whiteSpace = 'pre-line';
+      body.textContent = msg;
+      if (hasInput) {
+        const inp = document.createElement('input');
+        inp.className = 'dlg-input';
+        inp.placeholder = '_______________';
+        body.appendChild(document.createElement('br'));
+        body.appendChild(inp);
+      }
+      d.appendChild(body);
+      // 按钮行
+      const row = document.createElement('div');
+      row.className = 'dlg-btns';
+      btns.forEach(b => {
+        const btn = document.createElement('button');
+        btn.className = 'btn' + (b.primary ? ' primary' : '');
+        btn.textContent = b.l;
+        const key = _reg(b.fn);
+        btn.addEventListener('click', () => _call(key, d));
+        row.appendChild(btn);
+      });
+      d.appendChild(row);
+      document.getElementById('deskArea').appendChild(d);
+      makeDraggable(bar);
+      d.addEventListener('mousedown', () => bringFront(d));
+      return d;
+    }
+
+    // ============================================================
+    //  不要删除.txt
+    // ============================================================
+    function openNotDelete() {
+      createWin('w-notdel', '不要删除.txt', 310, 0, 260, 130, `<div class="txt-file"><span class="em">如果你能看到这份文件，</span>
+说明你已经意识到：
+
+<span class="em">容量不是价值。</span>
+
+——
+
+这份文件本身占用 0% 容量。
+
+你可以留着它。</div>`);
+    }
+
+    // ============================================================
+    //  解锁物件卡片（第二、三轮开头）
+    // ============================================================
+    function getUnlockCardsForRound(r) {
+      const cards = [];
+      if (r === 2) {
+        // 第二轮：四件核心物件，对应核心记忆是否存活
+        [
+          { core: 'mother', item: 'old_key' },
+          { core: 'first_love', item: 'old_phone' },
+          { core: 'university', item: 'student_id' },
+          { core: 'childhood', item: 'paper_envelope' },
+        ].forEach(({ core, item }) => {
+          if (!MEMORIES[core].deleted) cards.push({ itemId: item, itemName: ITEMS[item].name });
+        });
+      } else if (r === 3) {
+        // 第三轮：v1.1 新物件，条件是对应子节点存活且未损坏
+        if (!MEMORIES['station'].deleted && !MEMORIES['station'].corrupted)
+          cards.push({ itemId: 'train_ticket', itemName: ITEMS['train_ticket'].name });
+        if (!MEMORIES['graduation'].deleted && !MEMORIES['graduation'].corrupted)
+          cards.push({ itemId: 'report_card', itemName: ITEMS['report_card'].name });
+      }
+      return cards;
+    }
+
+    function showUnlockCards(r) {
+      const old = document.getElementById('unlock-card-stack');
+      if (old) old.remove();
+
+      const cards = getUnlockCardsForRound(r);
+      if (!cards.length) return;
+
+      const stack = document.createElement('div');
+      stack.className = 'unlock-stack';
+      stack.id = 'unlock-card-stack';
+      document.body.appendChild(stack);
+
+      const GAP = 520; // ms between cards
+      cards.forEach((card, i) => {
+        setTimeout(() => {
+          const el = document.createElement('div');
+          el.className = 'unlock-card';
+          el.innerHTML =
+            '<span class="unlock-card-icon">📦</span>'
+            + '<span class="unlock-card-texts">'
+            + '<span class="unlock-card-label">解锁物件</span>'
+            + '<span class="unlock-card-name">' + card.itemName + '</span>'
+            + '</span>';
+          stack.appendChild(el);
+        }, 600 + i * GAP);
+      });
+
+      // 全部显示完 4 秒后淡出消失
+      const fadeAt = 600 + cards.length * GAP + 4000;
+      setTimeout(() => {
+        if (!stack.isConnected) return;
+        stack.style.transition = 'opacity .5s';
+        stack.style.opacity = '0';
+        setTimeout(() => stack.remove(), 520);
+      }, fadeAt);
+    }
+
+    // ============================================================
+    //  启动
+    // ============================================================
+    boot();
+  </script>
+</body>
+
+</html>

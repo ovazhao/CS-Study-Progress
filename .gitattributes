@@ -1,0 +1,6 @@
+#自动检测文本文件
+* text = auto
+
+#强制 .txt 和 .md 使用LF
+*.txt text eol=lf 
+*.md text eol=lf

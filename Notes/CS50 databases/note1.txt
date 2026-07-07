@@ -1,0 +1,67 @@
+https://www.bilibili.com/video/BV1EK411x7TP/?spm_id_from=333.788.videopod.sections&vd_source=b7d24aba80947cffe1a3ad6678b57120&p=4
+
+
+notes：
+1.
+type ls: to see the database in your current folder
+environment: sqlite3 databese.db
+ctrl + l back to the top of terminal
+. quit quit the SQL
+keyword SELECT: select some rows in the table of the database
+	SELECT * FROM "tabelname";
+	SELECT "column name","column name2" FROM "tablename";
+keyword LIMIT: limit the number of queries
+	SELECT "title" FROM "longlist" LIMIT 10;
+keyword WHERE: allows to get to some rows where condition is true
+	-= 
+	SELECT "title" FROM "longlist" WHERE "year" = 2023;
+	SELECT "title" FROM "longlist" WHERE "title" = 'Pyre';
+	*it is case sensitive
+	-other operators 
+	SELECT "title" FROM "longlist" WHERE "style" != 'hardcover';
+	SELECT "title" FROM "longlist" WHERE "style" <> 'hardcover';
+	*work the same as !=
+	- < >
+	SELECT "title" FROM "longlist" WHERE "rating" >= 4.0 ;
+	-NOT
+	SELECT "title" FROM "longlist" WHERE NOT  "style" = 'hardcover';
+	-combine the conditions: AND OR ()
+	SELECT "title" FROM "longlist" WHERE "year" = 2023 OR "year" = 2024;
+	SELECT "title" FROM "longlist" WHERE "rating">4.0 AND "vote">10000;
+type    NULL
+	SELECT "title", "translator" FROM "longlist" WHERE "translator" IS NULL;
+keyword LIKE: use to roughly match some strings
+	-not case sensitive
+	SELECT "title" FROM "longlist" WHERE "title" LIKE 'pyre';
+	-operators % _
+	SELECT "title" FROM "longlist" WHERE "title" LIKE '$love$';
+	*here, $ means it represent any strings
+	SELECT "title" FROM "longlist" WHERE "title" LIKE 'The $';
+	SELECT "title" FROM "longlist" WHERE "title" LIKE 'P_re';
+	*forget how to spell Pyre, so use _ to replace single characters
+keyword BETWEEN ... AND ...
+`	SELECT "title" FROM "longlist" WHERE "year" BETWEEN 2019 AND 2022 ;
+keyword ORDER BY: the default order is from least to greatest
+	SELECT "title","rating" FROM "longlist" ORDER BY "rating" LIMIT 10;
+	-ASC DESC
+	SELECT "title","rating" FROM "longlist" ORDER BY "rating" DESC LIMIT 10;
+	-multiple order
+	SELECT "title","rating" FROM "longlist" ORDER BY "rating" DESC, "votings" ASC LIMIT 10;
+	-for strings they are ordered alphabetically
+keyword DISTINCT: every thing only shown up once
+	SELECT DISTINCT "publisher" FROM "longlist";
+
+aggregate function COUNT AVG MIN MAX SUM:
+		   return one number based on the values in the whole role
+		   -usage
+		   SELECT AVG("rating") FROM "longlist";
+		   -rounding to 2 decimal places
+		   SELECT ROUND(AVG("rating"),2) FROM "longlist";
+		   -style
+		   SELECT ROUND(AVG("rating"),2) AS "average rating" FROM "longlist";
+		   -MAX and MIN for strings means earliest and lowest order alphabetically
+		   -* means every rows/columns
+		   SELECT COUNT(*) FROM "longlist"
+
+
+

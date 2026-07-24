@@ -155,26 +155,24 @@ there are too many programs in MM, but OS can handle only 100, so OS will transf
 - the OS can Suspend the process in the MM, which means the READY RUNNING BLOCKED state can be suspended
 - the  most desirable state to suspend: READY
 - For example, if a process is waiting for data from a file, it will be in the "suspended block" state until the data becomes available. Once the data is ready, the process transitions to "suspended ready" and can be scheduled to run by the operating system.
+
+
 ```mermaid
 stateDiagram-v2
-%% Basic States and Transitions
-[*] --> New
-New --> Ready : create
-Ready --> Running : scheduling dispatch
-Running --> Ready : Preempt
-Running --> Terminate
+    [*] --> New
+    New --> Ready : create
+    Ready --> Running : scheduling dispatch
+    Running --> Ready : Preempt
+    Running --> Terminate
 
-%% Blocking and Suspension (Main Path)
-Running --> Block : I/O services or system call (marked red in notes)
-Block --> Ready : I/O or sys. comp. call
+    Running --> Block : I/O services
+    Block --> Ready : I/O complete
 
-%% Suspended States with distinct labels
-Ready --> Suspend_Ready : suspend
-Suspend_Ready --> Ready : resume
-Block --> Suspend_Block : suspend
-Suspend_Block --> Block : Resume
+    Ready --> Suspend_Ready : suspend
+    Suspend_Ready --> Ready : resume
+    Block --> Suspend_Block : suspend
+    Suspend_Block --> Block : resume
 
-%% Special Dashed-line transitions
-Running -.-> Suspend_Ready
-Suspend_Block -.-> Ready : I/O completion
+    Running -.-> Suspend_Ready
+    Suspend_Block -.-> Ready : I/O completion
 ```

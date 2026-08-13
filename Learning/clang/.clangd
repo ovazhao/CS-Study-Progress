@@ -1,0 +1,4 @@
+CompileFlags:
+  Compiler: D:/mingw64/bin/gcc.exe
+  Add:
+    - -std=c99

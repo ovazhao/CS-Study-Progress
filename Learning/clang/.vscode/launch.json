@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "d:/work/clang",
-      "program": "d:/work/clang/build/Debug/outDebug",
+      "cwd": "c:/Users/b/Desktop/CS-Study-Progress/Learning/clang",
+      "program": "c:/Users/b/Desktop/CS-Study-Progress/Learning/clang/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

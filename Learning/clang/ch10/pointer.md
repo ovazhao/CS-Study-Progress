@@ -32,3 +32,6 @@ int age =21;
 int *pAge = NULL;
 pAge = &age;
 ```
+
+![alt text](image.png)
+

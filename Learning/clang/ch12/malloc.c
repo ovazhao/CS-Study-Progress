@@ -14,7 +14,7 @@ int main(void){
 
     while(isRunning){
         time(&rawtime);
-        printf("%ld\n",rawtime);
+        pTime = localtime(&rawtime);
         Sleep(1000);
     }
 }

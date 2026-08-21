@@ -1,0 +1,8 @@
+You should have no problem recalling which redirection
+
+operator does what. Just remember that each operator
+points
+
+in the direction the informaton flows. Think of it as a funnel.
+
+using >> can add more words at the end of the file instead of clearing all contents out.

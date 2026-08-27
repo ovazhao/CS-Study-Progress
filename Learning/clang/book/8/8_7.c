@@ -1,7 +1,7 @@
 # include <stdio.h>
 # include <stdbool.h>
 int get_long();
-bool bad_limit(long LOWEST, long HIGHEST ,int lower,int upper);
+bool good_limit(long LOWEST, long HIGHEST ,int lower,int upper);
 int sum_squares (int upper, int lower);
 int main (void){
     const long MIN_CASE = -10000000;
@@ -16,22 +16,38 @@ int main (void){
     lowerCase = get_long();
     printf("Upper limit: \n");
     upperCase = get_long();
-    if (bad_limit(MIN_CASE, MAX_CASE, lowerCase, upperCase)){
-        result = sum_squares(upperCase, lowerCase);
-    }
+    
+    while (lowerCase!=0 || upperCase!=0){
+        
+        if(good_limit(MIN_CASE, MAX_CASE, lowerCase, upperCase)==true){//最无法确定的就是这一行，在if的条件里面该函数里print的内容会不会真的被print出来，是指证明是会的
+            result = sum_squares(upperCase, lowerCase);
+            printf("The sum of the squares of the integers from %d to %d is %d.\n", lowerCase,upperCase,result);
+        } else{
+            printf("Please try again.\n");}
 
+            printf("Lower limit: \n");
+            lowerCase = get_long();
+            printf("Upper limit: \n");
+            upperCase = get_long();
+        }
+        
+        
+    printf("Done.");
+    return 0;
 }
 
 int get_long(){
     int ch = 0;
-    while (scanf("%d", &ch) != 0){
-        putchar(ch);
-        printf("is not and integer.\n");
+    while (scanf("%d", &ch) != 1){
+        while((ch = getchar())!= '\n'){
+            putchar(ch);    
+        }
+        printf(" is not and integer.\n");
         printf("Please enter an integer value, such as 25, -178, or 3:\n");
     }
     return ch;
 }
-bool bad_limit(long LOWEST, long HIGHEST ,int lower,int upper){
+bool good_limit(long LOWEST, long HIGHEST ,int lower,int upper){
     bool good= false;
     if (lower > upper) {
         printf("%d is not smaller than %d\n", lower, upper);
@@ -50,7 +66,7 @@ bool bad_limit(long LOWEST, long HIGHEST ,int lower,int upper){
 
 int sum_squares (int upper, int lower){
     int sum_up = 0;
-    for (int i = lower-1; i <= upper; i++){
+    for (int i = lower; i <= upper; i++){
         sum_up+= i*i;
     }
     return sum_up;

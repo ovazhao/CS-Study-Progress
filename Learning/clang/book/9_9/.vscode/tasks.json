@@ -1,0 +1,26 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build (多文件编译)",
+			"type": "shell",
+			"command": "gcc",
+			"args": [
+				"-Wall",
+				"-g",
+				"hotel.c",
+				"usehotel.c",
+				"-o",
+				"usehotel"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"detail": "把 hotel.c 和 usehotel.c 一起编译，生成可执行文件 usehotel"
+		}
+	]
+}

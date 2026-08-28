@@ -11,7 +11,7 @@
 				"hotel.c",
 				"usehotel.c",
 				"-o",
-				"usehotel"
+				"usehotel_2"
 			],
 			"group": {
 				"kind": "build",

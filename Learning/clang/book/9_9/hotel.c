@@ -1,49 +1,59 @@
 #include <stdio.h>
 #include "hotel.h"
-int menu(void)
-{
-    int code, status;
-
-    printf("\n%s%s\n", STARS, STARS);
+int menu(void){
+    int num = 0;
+    printf("%s\n",STARS);
     printf("Enter the number of the desired hotel:\n");
     printf("1) Fairfield Arms          2) Hotel Olympic\n");
-
-    printf("3) Chertworthy Plaza       4) The Stockton\n");
-    printf("5) quit\n");
-    printf("%s%s\n", STARS, STARS);
-    while ((status = scanf("%d", &code)) != 1 ||
-            (code < 1 || code > 5))
-    {
-        if (status != 1)
-            scanf("%*s");   // 处理非整数输入
+    printf("3) Chertworthy Plaza       4) The Stockton\n5) quit\n");
+    printf("%s\n",STARS);
+    
+    while((scanf("%d", &num)!=1)||((num < 1)||(num > 5))){
         printf("Enter an integer from 1 to 5, please.\n");
-    }
+        while(getchar()!='\n'){
 
-    return code;
+        }
+        num = getchar();
+    }
+    return num - '0';
 }
+int getnights(void){
+    int nights = 0;
+    while (1){
+        printf("How many nights are needed?");
+        
+        if (scanf("%d", & nights) == 0){
+            printf("Please enter an integer, such as 2.");
+            while(getchar()!='\n'){
 
-int getnights(void)
-{
-    int nights;
+            } 
+            nights = 0;
+            continue;
+        }else {
+            if (nights <= 0){
+                printf("Input a number within range.");
+                while(getchar()!='\n'){
 
-    printf("How many nights are needed? ");
-    while (scanf("%d", &nights) != 1)
-    {
-        scanf("%*s");       // 处理非整数输入
-        printf("Please enter an integer, such as 2.\n");
+                } 
+                nights = 0;
+                continue;
+            } else {
+                while(getchar()!='\n'){
+
+                } 
+                break;
+            }
+        }
     }
-
     return nights;
 }
 
-void showprice(double rate, int nights)
-{
-    int n;
-    double total = 0.0;
-    double factor = 1.0;
-
-    for (n = 1; n <= nights; n++, factor *= DISCOUNT)
-        total += rate * factor;
-    printf("The total cost will be $%0.2f.\n", total);
+void showprice(double rate, int nights){
+    double thisNight = rate;
+    double sum = rate;
+    for (int i = 1; i < nights; i++){
+        thisNight *= DISCOUNT;
+        sum += thisNight;
+    }
+    printf("The total cost will be $ %.2f.\n", sum);
 }
-

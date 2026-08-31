@@ -7,6 +7,7 @@ typedef struct {
 } MenuItem;
 
 int getnumber(void);
+int is_valid(int num);
 void alter(int *alter_x, int *alter_y);
 int the_biggest_in_two(int a, int b);
 int the_biggest_in_three(int a, int b,int c);
@@ -40,35 +41,16 @@ int main (void){
     printf("This is a program for testing all my practices in 9.10\n");
     number = getnumber();
     while (number != 0){
-        switch (number) {
-            case 6:
-                do_swap();
+        for (int i = 0; i < sizeof(menu)/sizeof(menu[0]); i ++){
+            if (number == menu[i].id){
+                menu[i].action();
                 break;
-            case 7:
-                do_test();
-                break;
-            case 8:
-                do_largest3();
-                break;
-            case 9:
-                do_sort3();
-                break;
-            case 10:
-                do_chartonum();
-                break;
-            case 11:
-                do_baseconv();
-                break;
-                
-            default:
-                break;
-
-
-
-            
+            }
         }
         number = getnumber();
     }
+    printf("Bye.");
+    
     return 0;
 }
 int getnumber(void){
@@ -76,9 +58,12 @@ int getnumber(void){
     getchar();
     printf("%s\n",STAR);
     printf("Which practice do you want to test?(0 to quit)\n");
-    printf("T6\nT7\nT8\nT9\nT10\nT11\nT:");
+    for (int i = 0; i < sizeof(menu)/sizeof(menu[0]); i ++){
+        printf("%s", menu[i].desc);
+    }
+    printf("T:");
     scanf("%d",&num);
-    while((num!=6)&&(num!=7)&&(num!=8)&&(num!=9)&&(num!=10)&&(num!=11)&&(num!=0)){
+    while((is_valid(num)==0)&&(num!=0)){
         printf("Not within the range. Try again.\n");
         num = 0;
         scanf("%d",&num);
@@ -87,6 +72,15 @@ int getnumber(void){
 
     }
     return num;
+}
+int is_valid(int num){
+    int valid = 0;
+    for (int i = 0; i < sizeof(menu)/sizeof(menu[0]); i ++){
+        if (num == menu[i].id){
+            valid = 1;
+        }
+    }
+    return valid;
 }
 
 void alter(int *alter_x, int *alter_y){

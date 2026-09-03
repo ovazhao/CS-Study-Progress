@@ -1,9 +1,10 @@
 #include <stdio.h>
 # define ROWS 3
 # define COLS 4
+/*三种等价的 二维数组当函数形参 原型语法*/
 void sum_rows(int ar[][COLS], int rows);
 void sum_cols(int (*ar)[COLS], int rows);
-void sum2d(int ar[ROWS][COLS], int rows);
+void sum2d(int [][COLS], int);
 int main(void){
     int junk[ROWS][COLS] = {
     {2, 4, 6, 8},

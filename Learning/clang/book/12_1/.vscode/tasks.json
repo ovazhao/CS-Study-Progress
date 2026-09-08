@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build (多文件编译)",
+            "type": "shell",
+            "command": "gcc",
+            "args": [
+                "-Wall",
+                "-g",
+                "12_1_a.c",
+                "12_1_b.c",
+                "-o",
+                "12_1"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "多文件编译 12_1_a.c + 12_1_b.c"
+        }
+    ]
+}

@@ -6,7 +6,7 @@ char* s_gets(char *string, int size);
 int main(void){
     puts("Who is buried in Grant's tomb?\n");
     char try[40];
-    char wrong_answer[100]="";
+    char wrong_answer[100] = "";
     char *h = s_gets(try, 40);
         while (strcmp(try, ANSWER) != 0){
             combine(wrong_answer, h, 40);

@@ -1,0 +1,18 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build (编译当前文件夹所有 .c)",
+            "type": "shell",
+            "command": "$cs = Get-ChildItem -Path *.c | ForEach-Object { $_.Name }; if (-not $cs) { Write-Error '当前文件夹没有 .c 文件' -ErrorAction Stop }; gcc -Wall -g $cs -o \"${workspaceFolderBasename}.exe\"",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "编译当前文件夹下所有 .c 文件，输出与文件夹同名的.exe"
+        }
+    ]
+}
